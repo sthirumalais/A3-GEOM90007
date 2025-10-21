@@ -7,7 +7,7 @@ sightings_data <- read.csv(
 # Define column groups
 species <- c("scientificName", "vernacularName", "individualCount")
 taxonomy <- c("taxonConceptID", "species", "family", "genus", "order")
-geographic <- c("decimalLatitude", "decimalLongitude", "locality")
+geographic <- c("decimalLatitude", "decimalLongitude")
 temporal <- c("eventDate")
 
 # Combine all required columns
