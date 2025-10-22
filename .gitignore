@@ -53,3 +53,4 @@ air.toml
 .vscode/extensions.json
 .gitignore
 .vscode/settings.json
+.vscode/
