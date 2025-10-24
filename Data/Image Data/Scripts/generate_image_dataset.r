@@ -60,17 +60,3 @@ missing_species <- bird_df %>%
 
 print(missing_species)
 cat("Total missing images:", nrow(missing_species), "\n")
-
-urls <- bird_df$image_url
-
-for (i in seq_along(urls)) {
-  
-  query <- gsub(" ", "_", birds[i])
-  curr_dir <- getwd()
-  subfolder <- file.path(curr_dir, 'Images', query)
-  if (!dir.exists(subfolder)) dir.create(subfolder)
-  img <- image_read(urls[i])
-  img_resized <- image_resize(img, "256x256!")
-  output_path <- file.path(subfolder, paste0(query, ".jpg"))
-  image_write(img_resized, path = paste0(query, ".jpg"), format = "jpg")
-}
