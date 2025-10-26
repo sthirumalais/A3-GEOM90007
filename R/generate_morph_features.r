@@ -3,18 +3,22 @@ library(dplyr)
 library(readxl)
 library(stringr)
 
-bird_data <- read.csv("sightings_data.csv")
+bird_data <- read.csv("Data/Pre - Processed Data/data.csv")
 
 # Unique list of bird species after pre-processing
 birds <- unique(bird_data$scientificName)
 
 # AVONET database
 read_avonet_sheet <- function(sheet_name, species_col) {
-  read_excel("AVONET%20Supplementary%20dataset%201.xlsx",
-             sheet = sheet_name) %>%
-    mutate(across(everything(), as.character)) %>%  
-    mutate(species_clean = tolower(trimws(.data[[species_col]])),
-           source = sheet_name)
+  read_excel(
+    "Data/Morphological Data/AVONET%20Supplementary%20dataset%201.xlsx",
+    sheet = sheet_name
+  ) %>%
+    mutate(across(everything(), as.character)) %>%
+    mutate(
+      species_clean = tolower(trimws(.data[[species_col]])),
+      source = sheet_name
+    )
 }
 
 avonet1 <- read_avonet_sheet("AVONET1_BirdLife", "Species1")
@@ -37,8 +41,11 @@ manual_replace <- c(
 bird_df <- bird_df %>%
   mutate(
     join_name = case_when(
-      scientific_name_clean %in% names(manual_replace) ~ manual_replace[scientific_name_clean],
-      scientific_name_clean %in% avonet_all$species_clean ~ scientific_name_clean,
+      scientific_name_clean %in% names(manual_replace) ~ manual_replace[
+        scientific_name_clean
+      ],
+      scientific_name_clean %in%
+        avonet_all$species_clean ~ scientific_name_clean,
       TRUE ~ NA_character_
     ),
     match_status = case_when(
@@ -58,4 +65,8 @@ cat("Replaced matches:", sum(final_df$match_status == "replaced"), "\n")
 cat("Unmatched:", sum(final_df$match_status == "unmatched"), "\n")
 
 
-write.csv(final_df, "bird_list_with_avonet_traits.csv", row.names = FALSE) # save CSV file
+write.csv(
+  final_df,
+  "Data/Morphological Data/bird_list_with_avonet_traits.csv",
+  row.names = FALSE
+) # save CSV file

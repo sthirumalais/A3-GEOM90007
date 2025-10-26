@@ -2,9 +2,11 @@ library(dplyr)
 
 # Read data
 sightings_data <- read.csv(
-  "Data/Raw Data/Sightings Data/records-2025-10-20.csv"
+  "Data/Sightings Data/records-2025-10-20.csv"
 )
-wikipedia_data <- read.csv("Data/Image Data/Data/bird_wikipedia_data.csv")
+wikipedia_data <- read.csv(
+  "Data/Description Data/bird_wikipedia_data.csv"
+)
 
 # Define column groups
 species <- c("scientificName", "species", "vernacularName", "individualCount")
@@ -45,13 +47,13 @@ colnames(sightings_data)[
 
 # Add image paths and descriptions
 image_dirs <- list.dirs(
-  "Data/Image Data/Data/Images",
+  "Data/Image Data",
   full.names = FALSE,
   recursive = FALSE
 )
 image_mapping <- data.frame(
   scientificName = gsub("_", " ", image_dirs),
-  images = file.path("Data/Image Data/Data/Images", image_dirs),
+  images = file.path("Data/Image Data", image_dirs),
   stringsAsFactors = FALSE
 )
 
@@ -90,7 +92,31 @@ sightings_data$genus <- sapply(sightings_data$genus, clean_unicode)
 sightings_data$order <- sapply(sightings_data$order, clean_unicode)
 sightings_data$description <- sapply(sightings_data$description, clean_unicode)
 
-# Save processed data
+frequency <- table(sightings_data$scientificName)
+p <- quantile(frequency, c(.5, .75, .95))
+categories_map <- function(n) {
+  ifelse(
+    n >= p[3],
+    "Common",
+    ifelse(
+      n >= p[2],
+      "Fairly Common",
+      ifelse(n >= p[1], "Uncommon", ifelse(n >= 10, "Rare", "Vagrant"))
+    )
+  )
+}
+categories <- data.frame(
+  scientificName = names(frequency),
+  frequency_category = categories_map(frequency),
+  stringsAsFactors = FALSE
+)
+sightings_data <- merge(
+  sightings_data,
+  categories,
+  by = "scientificName",
+  all.x = TRUE
+)
+
 write.csv(
   sightings_data,
   "Data/Pre - Processed Data/data.csv",

@@ -8,8 +8,8 @@ from io import BytesIO
 from urllib.parse import quote
 
 
-input_csv = "bird_wikipedia_data.csv" 
-base_dir = "Images"
+input_csv = "Data/Description Data/bird_wikipedia_data.csv" 
+base_dir = "Data/Image Data"
 os.makedirs(base_dir, exist_ok = True)
 
 HEADERS = {
