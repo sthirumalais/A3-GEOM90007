@@ -117,6 +117,11 @@ sightings_data <- merge(
   all.x = TRUE
 )
 
+sightings_data$thumbnail <- file.path(
+  "Data/Icons",
+  paste0(sightings_data$order, ".svg")
+)
+
 write.csv(
   sightings_data,
   "Data/Pre - Processed Data/data.csv",
