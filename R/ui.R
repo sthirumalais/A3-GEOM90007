@@ -58,8 +58,9 @@ filter_panel <- tabPanel(
     selectInput(
       inputId = "filter_species",
       label = "Species",
-      choices = c("All"),
-      selected = "All"
+      choices = character(0),
+      selected = NULL,
+      multiple = TRUE
     )
   ),
   tags$div(class = "spacer h32"),
@@ -68,8 +69,9 @@ filter_panel <- tabPanel(
     selectInput(
       inputId = "filter_order",
       label = "Order (Taxonomy)",
-      choices = c("All"),
-      selected = "All"
+      choices = character(0),
+      selected = NULL,
+      multiple = TRUE
     )
   ),
   tags$div(class = "spacer h32"),
@@ -122,9 +124,9 @@ filter_panel <- tabPanel(
     ),
     sliderInput(
       inputId = "filter_year_range",
-      min = 2015,
+      min = 1985,
       max = 2019,
-      value = c(2015, 2019),
+      value = c(1985, 2019),
       step = 1,
       sep = "",
       label = NULL
@@ -140,9 +142,9 @@ filter_panel <- tabPanel(
     sliderInput(
       inputId = "filter_radius",
       min = 0,
-      max = 10,
-      step = 0.25,
-      value = c(0, 10),
+      max = 8,
+      step = 2,
+      value = c(0, 8),
       dragRange = TRUE,
       label = NULL,
       post = "km"
@@ -216,7 +218,7 @@ intro_panel <- tabPanel(
       class = "page",
       tags$img(src = "assets/slide1.svg"),
       tags$p(
-        "Explore bird observations across Melbourne (Naarm) from 2015 to 2019."
+        "Explore bird observations across Melbourne (Naarm) from 1985 to 2019."
       )
     ),
     tags$div(

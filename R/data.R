@@ -67,7 +67,7 @@ load_bird_data <- function(filename = "Data/Pre - Processed Data/data.csv") {
   ) %>%
     # Extract year from date for filtering
     mutate(year = lubridate::year(date)) %>%
-    filter(year >= 2015, year <= 2019)
+    filter(year >= 1985, year <= 2019)
 
   print(glue("Loaded dataframe with {nrow(df)} rows and {ncol(df)} columns"))
   print(glue("Unique species: {n_distinct(df$scientificName)}"))
@@ -119,15 +119,15 @@ filter_bird_data <- function(data,
   filtered <- data
 
   # Filter by species if provided
-  if (!is.null(species) && species != "All") {
+  if (!is.null(species) && length(species) > 0) {
     filtered <- filtered %>%
-      filter(commonName == species)
+      filter(commonName %in% species)
   }
 
   # Filter by order if provided
-  if (!is.null(order) && order != "All") {
+  if (!is.null(order) && length(order) > 0) {
     filtered <- filtered %>%
-      filter(.data$order == order)
+      filter(.data$order %in% order)
   }
 
   # Filter by rarity if provided
@@ -161,6 +161,54 @@ filter_bird_data <- function(data,
         distance <= radius_range[2]
       )
   }
+
+  # Deduplicate bird species within proximity to prevent multiple instances in spirals
+  # At zoom levels 10-14: Birds cluster and form spirals - we want only unique species
+  # At zoom level 15+: Clustering is disabled, all birds show at actual locations
+
+  if (nrow(filtered) > 0) {
+    # Sort to prioritize best observations: most recent date, highest count
+    filtered <- filtered %>%
+      arrange(scientificName, desc(date), desc(count))
+
+    # Track which rows to keep
+    keep_rows <- rep(TRUE, nrow(filtered))
+
+    # For each bird, check if there are duplicate species nearby
+    for (i in seq_len(nrow(filtered))) {
+      if (!keep_rows[i]) next  # Already marked as duplicate
+
+      # Find later observations of the same species
+      same_species_later <- which(
+        filtered$scientificName == filtered$scientificName[i] &
+        keep_rows &
+        seq_len(nrow(filtered)) > i
+      )
+
+      if (length(same_species_later) > 0) {
+        # Calculate distances to other same-species observations
+        distances <- haversine_km(
+          lat = filtered$latitude[same_species_later],
+          lon = filtered$longitude[same_species_later],
+          center_lat = filtered$latitude[i],
+          center_lon = filtered$longitude[i]
+        )
+
+        # Mark duplicates within 1km as duplicates (prevents spiral confusion)
+        # This distance matches the clustering radius at zoom levels 13-14
+        # where spirals most commonly occur (80 pixels ≈ 0.75-2 km)
+        duplicates <- same_species_later[distances <= 1.0]
+        keep_rows[duplicates] <- FALSE
+      }
+    }
+
+    # Keep only non-duplicate observations
+    filtered <- filtered[keep_rows, ]
+  }
+
+  # Add unique row ID for marker identification (needed for modal dialog clicks)
+  filtered <- filtered %>%
+    mutate(marker_id = row_number())
 
   return(filtered)
 }

@@ -8,9 +8,9 @@ library(glue)
 
 # Map definition---------------------------------------------------------------
 
-#' Generates a symbol to indicate a bird sighting
+#' Gets the icon path for a bird sighting based on taxonomic order
 #' @param order The bird order (e.g., Passeriformes, Accipitriformes)
-#' @return icon
+#' @return character path to icon
 map_symbol <- function(order = "default") {
   # Map bird orders to their marker paths
   # Default to a generic bird icon if order-specific marker doesn't exist
@@ -36,9 +36,7 @@ map_symbol <- function(order = "default") {
     order == "location" ~ "assets/location.svg",
     TRUE ~ "assets/marker.svg" # Use generic marker as fallback
   )
-  size <- 24
-  icon <- makeIcon(img, NULL, size, size, className = glue("marker {order}"))
-  return(icon)
+  return(img)
 }
 
 #' Get radar circle information for visualization
@@ -75,6 +73,16 @@ get_radar_info <- function(radius_range) {
       ),
       opacities = c(0.22, 0.13, 0.08, 0.05)
     ),
+    max_radius <= 15 ~ list(
+      radii = c(
+        max_radius * 200,
+        max_radius * 400,
+        max_radius * 600,
+        max_radius * 800,
+        max_radius * 1000
+      ),
+      opacities = c(0.20, 0.15, 0.10, 0.07, 0.04)
+    ),
     TRUE ~ list(radii = 0, opacities = 0)
   )
   return(radar_info)
@@ -102,10 +110,16 @@ map_renderer <- function(map_data, state) {
     "pk.eyJ1IjoiaGs3NDAyIiwiYSI6ImNtaGJkM3BxdTB3bGQyaXB5czY2ZW1zMG0ifQ",
     ".yD4Rsrn1vPqxXk2AFgjOZA"
   )
+  # Get icon paths for each bird based on taxonomic order
   marker_orders <- ifelse(is.na(map_data$order), "default", map_data$order)
-  unique_orders <- unique(marker_orders)
-  icon_lookup <- setNames(lapply(unique_orders, map_symbol), unique_orders)
-  marker_icons <- unname(icon_lookup[marker_orders])
+  icon_paths <- sapply(marker_orders, map_symbol)
+
+  # Create icons using the icons() function for proper vectorization
+  marker_icons <- icons(
+    iconUrl = icon_paths,
+    iconWidth = 24,
+    iconHeight = 24
+  )
 
   map <- map_data %>%
     # Initialise leaflet
@@ -135,38 +149,14 @@ map_renderer <- function(map_data, state) {
       ~longitude,
       ~latitude,
       icon = marker_icons,
+      layerId = ~marker_id,
       clusterOptions = leaflet::markerClusterOptions(
         disableClusteringAtZoom = 15,
         spiderfyOnMaxZoom = TRUE,
         removeOutsideVisibleBounds = TRUE,
         maxClusterRadius = 80
       ),
-      clusterId = "bird_clusters",
-      popup = ~ paste0(
-        "<div class='bird-popup'>",
-        "<h3>",
-        commonName,
-        "</h3>",
-        "<p><em>",
-        scientificName,
-        "</em></p>",
-        "<p><strong>Order:</strong> ",
-        order,
-        "</p>",
-        "<p><strong>Family:</strong> ",
-        family,
-        "</p>",
-        "<p><strong>Count:</strong> ",
-        count,
-        "</p>",
-        "<p><strong>Date:</strong> ",
-        date,
-        "</p>",
-        "<p><strong>Rarity:</strong> ",
-        rarityCategory,
-        "</p>",
-        "</div>"
-      )
+      clusterId = "bird_clusters"
     ) %>%
     # Add Radar Circles showing search radius
     {

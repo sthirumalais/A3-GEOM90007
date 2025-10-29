@@ -82,20 +82,20 @@ server <- function(input, output, session) {
   #' @param zoom_level {numeric} The initial zoom level
   state$zoom_level <- 12
 
-  #' @param filter_species {character} Filter for bird species
-  state$filter_species <- "All"
+  #' @param filter_species {character} Filter for selected bird species
+  state$filter_species <- character(0)
 
-  #' @param filter_order {character} Filter for bird taxonomic order
-  state$filter_order <- "All"
+  #' @param filter_order {character} Filter for selected bird taxonomic orders
+  state$filter_order <- character(0)
 
   #' @param filter_rarity {vector} Rarity categories to show
   state$filter_rarity <- c("Common", "Fairly Common", "Uncommon", "Rare", "Vagrant")
 
   #' @param filter_year_range {c(min, max)} Filter for observation years
-  state$filter_year_range <- c(2015, 2019)
+  state$filter_year_range <- c(1985, 2019)
 
   #' @param filter_radius {c(min, max)} Distance range from center location in km
-  state$filter_radius <- c(0, 10)
+  state$filter_radius <- c(0, 8)
 
   #' Event handlers ----------------------------------------------------------
 
@@ -111,13 +111,13 @@ server <- function(input, output, session) {
 
   # Filter by species
   observeEvent(input$filter_species, {
-    state$filter_species <- input$filter_species
-  })
+    state$filter_species <- if (is.null(input$filter_species)) character(0) else input$filter_species
+  }, ignoreNULL = FALSE)
 
   # Filter by order
   observeEvent(input$filter_order, {
-    state$filter_order <- input$filter_order
-  })
+    state$filter_order <- if (is.null(input$filter_order)) character(0) else input$filter_order
+  }, ignoreNULL = FALSE)
 
   # Filter by rarity checkboxes
   observe({
@@ -144,22 +144,82 @@ server <- function(input, output, session) {
 
   # Load the bird sighting data
   bird_data <- load_bird_data()
-  year_range <- range(bird_data$year, na.rm = TRUE)
-  state$filter_year_range <- year_range
+  full_year_range <- c(1985, 2019)
+  state$filter_year_range <- full_year_range
 
-  # Update filter dropdowns with actual data
+  taxonomy_lookup <- bird_data %>%
+    distinct(commonName, order) %>%
+    arrange(order, commonName)
+
+  available_species <- reactive({
+    selected_orders <- state$filter_order
+    lookup <- taxonomy_lookup
+
+    if (length(selected_orders) > 0) {
+      lookup <- lookup %>% filter(order %in% selected_orders)
+    }
+
+    lookup %>%
+      distinct(commonName) %>%
+      arrange(commonName) %>%
+      pull(commonName)
+  })
+
+  available_orders <- reactive({
+    selected_species <- state$filter_species
+    lookup <- taxonomy_lookup
+
+    if (length(selected_species) > 0) {
+      lookup <- lookup %>% filter(commonName %in% selected_species)
+    }
+
+    lookup %>%
+      distinct(order) %>%
+      arrange(order) %>%
+      pull(order)
+  })
+
+  observeEvent(available_species(), {
+    choices <- available_species()
+    current_selection <- isolate(state$filter_species)
+    valid_selection <- intersect(current_selection, choices)
+
+    if (!identical(current_selection, valid_selection)) {
+      state$filter_species <- valid_selection
+    }
+
+    updateSelectInput(
+      session,
+      "filter_species",
+      choices = choices,
+      selected = if (length(valid_selection) == 0) NULL else valid_selection
+    )
+  }, ignoreNULL = FALSE)
+
+  observeEvent(available_orders(), {
+    choices <- available_orders()
+    current_selection <- isolate(state$filter_order)
+    valid_selection <- intersect(current_selection, choices)
+
+    if (!identical(current_selection, valid_selection)) {
+      state$filter_order <- valid_selection
+    }
+
+    updateSelectInput(
+      session,
+      "filter_order",
+      choices = choices,
+      selected = if (length(valid_selection) == 0) NULL else valid_selection
+    )
+  }, ignoreNULL = FALSE)
+
+  # Update filter controls with actual data
   observe({
-    species_list <- c("All", get_species_list(bird_data))
-    order_list <- c("All", get_order_list(bird_data))
-    year_range <- range(bird_data$year, na.rm = TRUE)
-
-    updateSelectInput(session, "filter_species", choices = species_list)
-    updateSelectInput(session, "filter_order", choices = order_list)
     updateSliderInput(
       session,
       "filter_year_range",
-      min = year_range[1],
-      max = year_range[2],
+      min = full_year_range[1],
+      max = full_year_range[2],
       value = state$filter_year_range
     )
   })
@@ -189,13 +249,20 @@ server <- function(input, output, session) {
     data <- filtered_data()
 
     if (nrow(data) == 0) {
+      # Create location marker icon
+      location_icon <- icons(
+        iconUrl = map_symbol("location"),
+        iconWidth = 24,
+        iconHeight = 24
+      )
+
       leafletProxy("leaflet_map") %>%
         clearMarkers() %>%
         clearMarkerClusters() %>%
         leaflet::addMarkers(
           lat = state$center_lat,
           lng = state$center_lng,
-          icon = map_symbol("location"),
+          icon = location_icon,
           options = markerOptions(clickable = FALSE)
         ) %>%
         leaflet::setView(
@@ -206,10 +273,16 @@ server <- function(input, output, session) {
       return()
     }
 
+    # Get icon paths for each bird based on taxonomic order
     marker_orders <- ifelse(is.na(data$order), "default", data$order)
-    unique_orders <- unique(marker_orders)
-    icon_lookup <- setNames(lapply(unique_orders, map_symbol), unique_orders)
-    marker_icons <- unname(icon_lookup[marker_orders])
+    icon_paths <- sapply(marker_orders, map_symbol)
+
+    # Create icons using the icons() function for proper vectorization
+    marker_icons <- icons(
+      iconUrl = icon_paths,
+      iconWidth = 24,
+      iconHeight = 24
+    )
 
     leafletProxy("leaflet_map", data = data) %>%
       clearMarkers() %>%
@@ -218,24 +291,14 @@ server <- function(input, output, session) {
       leaflet::addMarkers(
         ~ longitude, ~ latitude,
         icon = marker_icons,
+        layerId = ~marker_id,
         clusterOptions = leaflet::markerClusterOptions(
           disableClusteringAtZoom = 15,
           spiderfyOnMaxZoom = TRUE,
           removeOutsideVisibleBounds = TRUE,
           maxClusterRadius = 80
         ),
-        clusterId = "bird_clusters",
-        popup = ~ paste0(
-          "<div class='bird-popup'>",
-          "<h3>", commonName, "</h3>",
-          "<p><em>", scientificName, "</em></p>",
-          "<p><strong>Order:</strong> ", order, "</p>",
-          "<p><strong>Family:</strong> ", family, "</p>",
-          "<p><strong>Count:</strong> ", count, "</p>",
-          "<p><strong>Date:</strong> ", date, "</p>",
-          "<p><strong>Rarity:</strong> ", rarityCategory, "</p>",
-          "</div>"
-        )
+        clusterId = "bird_clusters"
       ) %>%
       leaflet::setView(
         lng = state$center_lng,
@@ -247,16 +310,14 @@ server <- function(input, output, session) {
   #' Handle marker clicks to show detailed information
   observeEvent(input$leaflet_map_marker_click, {
     clicked <- input$leaflet_map_marker_click
-    req(clicked$lng, clicked$lat)
+    req(clicked$id)
 
     data <- filtered_data()
 
+    # Use marker_id to find the exact bird that was clicked
+    # This works correctly even when markers are spiderfied (in spiral formation)
     selected_bird <- data %>%
-      filter(
-        abs(longitude - clicked$lng) < 1e-5,
-        abs(latitude - clicked$lat) < 1e-5
-      ) %>%
-      slice(1)
+      filter(marker_id == as.numeric(clicked$id))
 
     if (nrow(selected_bird) > 0) {
       # Resolve media paths
