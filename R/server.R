@@ -413,7 +413,20 @@ server <- function(input, output, session) {
             mermaid_container
           ),
           tags$hr(),
-          tags$p(tags$strong("Rarity: "), selected_bird$rarityCategory)
+          tags$p(
+            tags$strong("Rarity: "),
+            tags$span(
+              style = paste0("color: ", case_when(
+                selected_bird$rarityCategory == "Common" ~ "#4CAF50",
+                selected_bird$rarityCategory == "Fairly Common" ~ "#FFC107",
+                selected_bird$rarityCategory == "Uncommon" ~ "#FF9800",
+                selected_bird$rarityCategory == "Rare" ~ "#F44336",
+                selected_bird$rarityCategory == "Vagrant" ~ "#9C27B0",
+                TRUE ~ "#52525F"
+              ), "; font-weight: 600;"),
+              selected_bird$rarityCategory
+            )
+          )
         )
       )
 
