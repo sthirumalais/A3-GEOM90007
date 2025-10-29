@@ -32,3 +32,123 @@ html{font-size:16px}html body{color:#52525f;background-color:#fff;font-family:"b
 .modal-backdrop {
   z-index: 9999;
 }
+
+/* Center bird name, image, and scientific name in popup */
+.modal-header .modal-title {
+  width: 100%;
+  text-align: center;
+  font-weight: 600;
+}
+
+/* Modal body scrolling */
+.modal-body {
+  max-height: 70vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 15px;
+}
+
+/* Custom scrollbar styling */
+.modal-body::-webkit-scrollbar {
+  width: 8px;
+}
+
+.modal-body::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.modal-body::-webkit-scrollbar-thumb {
+  background: #A8A8B5;
+  border-radius: 10px;
+}
+
+.modal-body::-webkit-scrollbar-thumb:hover {
+  background: #949598;
+}
+
+/* For Firefox */
+.modal-body {
+  scrollbar-width: thin;
+  scrollbar-color: #A8A8B5 #f1f1f1;
+}
+
+.bird-detail-modal .bird-image {
+  text-align: center;
+  display: block;
+}
+
+.bird-detail-modal .bird-image img {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.bird-detail-modal p em {
+  display: block;
+  text-align: center;
+  font-size: 16px;
+}
+
+/* Mermaid Taxonomy Diagram Styling */
+.taxonomy-section {
+  background: linear-gradient(135deg, #f5f9f5 0%, #ffffff 100%);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(45, 139, 87, 0.1);
+}
+
+.taxonomy-section h4 {
+  font-family: 'brandon-grotesque', 'Helvetica', 'Arial', sans-serif;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.mermaid {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+/* Enhance mermaid node styling */
+.mermaid svg {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Make diagram more compact */
+.mermaid .node rect,
+.mermaid .node circle,
+.mermaid .node ellipse,
+.mermaid .node polygon {
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+  transition: all 0.3s ease;
+}
+
+.mermaid .node:hover rect,
+.mermaid .node:hover circle,
+.mermaid .node:hover ellipse,
+.mermaid .node:hover polygon {
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.15));
+  transform: translateY(-2px);
+}
+
+/* Edge/arrow styling */
+.mermaid .edgePath .path {
+  stroke-width: 2px;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
+}
+
+.mermaid .edgeLabel {
+  background-color: transparent !important;
+}
+
+/* Responsive sizing for mobile */
+@media (max-width: 768px) {
+  .taxonomy-section {
+    padding: 15px;
+  }
+
+  .mermaid {
+    font-size: 12px;
+  }
+}

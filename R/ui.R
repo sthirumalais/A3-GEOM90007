@@ -32,6 +32,156 @@ headers <- tags$head(
     type = "text/css",
     href = "assets/shiny_app.css"
   ),
+  # mermaid.js for taxonomy diagrams
+  tags$script(
+    src = "https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"
+  ),
+  tags$script(HTML("
+    mermaid.initialize({
+      startOnLoad: false,
+      theme: 'base',
+      securityLevel: 'loose',
+      themeVariables: {
+        primaryColor: '#E8F5E9',
+        primaryTextColor: '#2D5016',
+        primaryBorderColor: '#4CAF50',
+        lineColor: '#66BB6A',
+        secondaryColor: '#C8E6C9',
+        tertiaryColor: '#A5D6A7',
+        fontSize: '14px',
+        fontFamily: 'brandon-grotesque, Helvetica, Arial, sans-serif'
+      },
+      flowchart: {
+        curve: 'basis',
+        padding: 10
+      }
+    });
+  ")),
+  tags$script(HTML("
+    (function() {
+      var pendingDefinitions = {};
+
+      function setupMermaidHandlers() {
+        if (!window.Shiny) {
+          return;
+        }
+        if (window.__mermaidHandlersReady) {
+          return;
+        }
+        window.__mermaidHandlersReady = true;
+
+        function renderMermaidDiagram(targetId, definitionOverride) {
+          if (definitionOverride) {
+            pendingDefinitions[targetId] = definitionOverride;
+          }
+
+          var attempts = 20;
+
+          function tryRender() {
+            var el = document.getElementById(targetId);
+            if (!el) {
+              if (attempts-- > 0) {
+                window.setTimeout(tryRender, 60);
+              }
+              return;
+            }
+
+            var mermaid = window.mermaid;
+            if (!mermaid) {
+              if (attempts-- > 0) {
+                window.setTimeout(tryRender, 60);
+              }
+              return;
+            }
+
+            if (el.dataset.processed === \"true\") {
+              return;
+            }
+
+            var definition = definitionOverride ||
+              pendingDefinitions[targetId] ||
+              el.getAttribute(\"data-mermaid-definition\") ||
+              el.dataset.mermaidDefinition ||
+              (el.textContent || \"\");
+
+            definition = (definition || \"\").trim();
+            if (!definition) {
+              return;
+            }
+
+            el.dataset.mermaidDefinition = definition;
+
+            var svgId = targetId + \"-svg-\" + Math.floor(Math.random() * 1e6);
+            var renderPromise;
+
+            if (typeof mermaid.render === \"function\") {
+              renderPromise = mermaid.render(svgId, definition);
+            } else if (mermaid.mermaidAPI && typeof mermaid.mermaidAPI.render === \"function\") {
+              renderPromise = new Promise(function(resolve, reject) {
+                try {
+                  mermaid.mermaidAPI.render(svgId, definition, function(svgCode) {
+                    resolve({ svg: svgCode });
+                  });
+                } catch (err) {
+                  reject(err);
+                }
+              });
+            } else {
+              if (attempts-- > 0) {
+                window.setTimeout(tryRender, 60);
+              }
+              return;
+            }
+
+            Promise.resolve(renderPromise).then(function(result) {
+              if (!result) {
+                return;
+              }
+              el.innerHTML = result.svg || \"\";
+              el.dataset.processed = \"true\";
+              delete pendingDefinitions[targetId];
+              if (typeof result.bindFunctions === \"function\") {
+                result.bindFunctions(el);
+              }
+            }).catch(function(err) {
+              console.error(\"Mermaid rendering failed for\", targetId, err);
+            });
+          }
+
+          var raf = window.requestAnimationFrame || function(cb) { return window.setTimeout(cb, 16); };
+          raf(tryRender);
+        }
+
+        Shiny.addCustomMessageHandler(\"renderMermaid\", function(message) {
+          if (!message || !message.id) {
+            return;
+          }
+          renderMermaidDiagram(message.id, message.definition);
+        });
+
+        if (window.jQuery) {
+          window.jQuery(document).on(\"shown.bs.modal\", \".modal\", function() {
+            var blocks = this.querySelectorAll(\".mermaid:not([data-processed])\");
+            if (!blocks.length) {
+              return;
+            }
+            Array.prototype.forEach.call(blocks, function(block) {
+              var id = block.getAttribute(\"id\");
+              if (id) {
+                renderMermaidDiagram(id);
+              }
+            });
+          });
+        }
+      }
+
+      if (window.Shiny) {
+        setupMermaidHandlers();
+      } else {
+        document.addEventListener(\"shiny:connected\", setupMermaidHandlers, { once: true });
+      }
+    })();
+  ")),
   # javascript
   tags$script(
     src = "assets/shiny_app.js"

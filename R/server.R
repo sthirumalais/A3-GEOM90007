@@ -201,8 +201,12 @@ server <- function(input, output, session) {
     current_selection <- isolate(state$filter_order)
     valid_selection <- intersect(current_selection, choices)
 
-    if (!identical(current_selection, valid_selection)) {
-      state$filter_order <- valid_selection
+    # Only update state$filter_order if species are selected
+    # This prevents clearing order filters when user selects orders without species
+    if (length(isolate(state$filter_species)) > 0) {
+      if (!identical(current_selection, valid_selection)) {
+        state$filter_order <- valid_selection
+      }
     }
 
     updateSelectInput(
@@ -226,9 +230,17 @@ server <- function(input, output, session) {
 
   #' Filtered dataset reacting to user controls
   filtered_data <- reactive({
+    species_filter <- state$filter_species
+
+    # When only taxonomic orders are selected, automatically constrain the map
+    # to the species that belong to those orders.
+    if (length(species_filter) == 0 && length(state$filter_order) > 0) {
+      species_filter <- available_species()
+    }
+
     filter_bird_data(
       bird_data,
-      species = state$filter_species,
+      species = species_filter,
       order = state$filter_order,
       year_range = state$filter_year_range,
       radius_range = state$filter_radius,
@@ -345,23 +357,63 @@ server <- function(input, output, session) {
               tags$img(
                 src = to_web_media_path(image_file),
                 alt = selected_bird$commonName,
-                style = "max-width: 100%; border-radius: 10px; margin-bottom: 15px;"
+                style = "max-width: 100%; border-radius: 10px; margin-bottom: 15px; display: block; margin-left: auto; margin-right: auto;"
               )
             )
           )
         )
       }
 
+      # Create mermaid diagram for taxonomy
+      mermaid_id <- paste0("mermaid-", gsub("[^A-Za-z0-9]", "", selected_bird$commonName))
+      mermaid_diagram <- sprintf("
+        graph TD
+          A[Order<br/><b>%s</b>]
+          B[Family<br/><b>%s</b>]
+          C[Genus<br/><b>%s</b>]
+          A --> B
+          B --> C
+
+          classDef orderStyle fill:#E8F5E9,stroke:#4CAF50,stroke-width:3px,color:#2D5016
+          classDef familyStyle fill:#C8E6C9,stroke:#66BB6A,stroke-width:2px,color:#2D5016
+          classDef genusStyle fill:#A5D6A7,stroke:#81C784,stroke-width:2px,color:#2D5016
+
+          class A orderStyle
+          class B familyStyle
+          class C genusStyle
+      ",
+      selected_bird$order,
+      selected_bird$family,
+      selected_bird$genus)
+
+      mermaid_container <- tags$div(
+        class = "mermaid",
+        id = mermaid_id,
+        style = "text-align: center; background: #fafafa; padding: 15px; border-radius: 8px;"
+      )
+      mermaid_container <- htmltools::tagAppendAttributes(
+        mermaid_container,
+        `data-mermaid-definition` = mermaid_diagram
+      )
+
       modal_children <- c(
         modal_children,
         list(
-          tags$p(tags$em(selected_bird$scientificName)),
+          tags$p(
+            style = "text-align: center; margin: 15px 0; font-size: 16px;",
+            tags$em(selected_bird$scientificName)
+          ),
           tags$hr(),
-          tags$p(tags$strong("Order: "), selected_bird$order),
-          tags$p(tags$strong("Family: "), selected_bird$family),
-          tags$p(tags$strong("Genus: "), selected_bird$genus),
-          tags$p(tags$strong("Count: "), selected_bird$count),
-          tags$p(tags$strong("Date: "), selected_bird$date),
+          tags$div(
+            class = "taxonomy-section",
+            style = "margin: 20px 0;",
+            tags$h4(
+              style = "text-align: center; margin-bottom: 15px; font-size: 16px;",
+              "Taxonomic Classification"
+            ),
+            mermaid_container
+          ),
+          tags$hr(),
           tags$p(tags$strong("Rarity: "), selected_bird$rarityCategory)
         )
       )
@@ -432,6 +484,14 @@ server <- function(input, output, session) {
         easyClose = TRUE,
         footer = modalButton("Close")
       ))
+
+      session$sendCustomMessage(
+        type = "renderMermaid",
+        message = list(
+          id = mermaid_id,
+          definition = mermaid_diagram
+        )
+      )
     }
   })
 }
