@@ -94,14 +94,14 @@ map_renderer <- function(map_data, state) {
   # Get radar info
   radar_info <- get_radar_info(radius_range)
 
-  # Prefer the modern Stadia-hosted Stamen tiles; fall back to CartoDB if unavailable
-  tile_provider <- "CartoDB.Positron"
-  if (!is.null(leaflet::providers$Stadia.StamenTonerLite)) {
-    tile_provider <- leaflet::providers$Stadia.StamenTonerLite
-  } else if (!is.null(leaflet::providers$Stamen.TonerLite)) {
-    tile_provider <- leaflet::providers$Stamen.TonerLite
-  }
-
+  # Mapbox template location
+  mapbox_template <- paste0(
+    "https://api.mapbox.com/styles/v1/mapbox/outdoors-v12",
+    "/tiles/{z}/{x}/{y}",
+    "?access_token=",
+    "pk.eyJ1IjoiaGs3NDAyIiwiYSI6ImNtaGJkM3BxdTB3bGQyaXB5czY2ZW1zMG0ifQ",
+    ".yD4Rsrn1vPqxXk2AFgjOZA"
+  )
   marker_orders <- ifelse(is.na(map_data$order), "default", map_data$order)
   unique_orders <- unique(marker_orders)
   icon_lookup <- setNames(lapply(unique_orders, map_symbol), unique_orders)
@@ -120,10 +120,10 @@ map_renderer <- function(map_data, state) {
       )
     ) %>%
     # Add tile layer
-    leaflet::addProviderTiles(
-      map = .,
-      provider = tile_provider,
-      options = leaflet::providerTileOptions(
+    leaflet::addTiles(
+      urlTemplate = mapbox_template,
+      attribution = "© Mapbox © OpenStreetMap",
+      options = leaflet::tileOptions(
         minZoom = 10,
         maxZoom = 18
       )
