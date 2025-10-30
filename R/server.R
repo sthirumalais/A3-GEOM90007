@@ -523,7 +523,7 @@ server <- function(input, output, session) {
       # Use a constant ID so Shiny input bindings like
       # input$tableauChoropleth_mark_selection_changed remain consistent
       tableau_choropleth_id <- "tableauChoropleth"
-      tableau_choropleth_url <- "https://public.tableau.com/shared/6DMRM4S73?:display_count=n&:origin=viz_share_link"
+      tableau_choropleth_url <- "https://public.tableau.com/views/Choropleth_birds/choropleth_birds?:language=en-US&publish=yes&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link"
 
       modal_children <- c(
         modal_children,
