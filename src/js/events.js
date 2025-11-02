@@ -50,16 +50,7 @@ const deactivate_panel = (panel, apply_dimmer = true) => {
   return true;
 }
 
-/**
-  Loads and binds event handlers for Shiny custom messages
-  @return void
- */
-const load_event_handlers = () => {
-  // Insert handlers here
-}
-
 export {
   activate_panel,
-  deactivate_panel,
-  load_event_handlers
+  deactivate_panel
 };

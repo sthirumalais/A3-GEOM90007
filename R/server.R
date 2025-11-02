@@ -84,7 +84,7 @@ server <- function(input, output, session) {
     "Vagrant"
   )
 
-  state$filter_year_range <- c(1985, 2019)
+  state$filter_year_range <- c(1998, 2019)
 
   state$filter_radius <- c(0, 8)
 
@@ -160,7 +160,7 @@ server <- function(input, output, session) {
 
   # Load the bird sighting data
   bird_data <- load_bird_data() # nolint: object_usage_linter
-  full_year_range <- c(1985, 2019)
+  full_year_range <- c(1998, 2019)
   state$filter_year_range <- full_year_range
 
   taxonomy_lookup <- bird_data %>%
@@ -439,8 +439,7 @@ server <- function(input, output, session) {
               selected_bird$rarityCategory == "Fairly Common" ~ "#FFC107",
               selected_bird$rarityCategory == "Uncommon" ~ "#FF9800",
               selected_bird$rarityCategory == "Rare" ~ "#F44336",
-              selected_bird$rarityCategory == "Vagrant" ~ "#9C27B0",
-              TRUE ~ "#52525F"
+              selected_bird$rarityCategory == "Vagrant" ~ "#9C27B0"
             )
             tags$span(
               style = paste0("color: ", rarity_colour, "; font-weight: 600;"),
@@ -451,20 +450,15 @@ server <- function(input, output, session) {
       )
     )
 
-    has_description <- !is.na(selected_bird$description) &&
-      nzchar(selected_bird$description)
-
-    if (has_description) {
-      modal_children <- c(
-        modal_children,
-        list(
-          tags$div(
-            tags$hr(),
-            tags$p(selected_bird$description)
-          )
+    modal_children <- c(
+      modal_children,
+      list(
+        tags$div(
+          tags$hr(),
+          tags$p(selected_bird$description)
         )
       )
-    }
+    )
 
     if (!is.na(audio_file)) {
       audio_children <- list(

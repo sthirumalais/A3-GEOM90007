@@ -17,23 +17,16 @@ compose_marker_icons <- function(orders, rarities) {
     return(icons(iconUrl = character(0)))
   }
 
-  clean_orders <- ifelse(is.na(orders) | orders == "", "default", orders)
-  clean_rarities <- ifelse(
-    is.na(rarities) | rarities == "",
-    "default",
-    rarities
-  )
-
   normalise_web_path <- function(path) {
     # Replace spaces to keep URLs safe while preserving directory separators
     gsub(" ", "%20", path, fixed = TRUE)
   }
 
   marker_urls <- vapply(
-    seq_along(clean_orders),
+    seq_along(orders),
     FUN = function(idx) {
-      order <- clean_orders[[idx]]
-      rarity <- clean_rarities[[idx]]
+      order <- orders[[idx]]
+      rarity <- rarities[[idx]]
 
       candidate_path <- sprintf(
         "bird-data/Markers_new/%s_%s.svg",

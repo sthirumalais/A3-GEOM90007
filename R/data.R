@@ -67,7 +67,7 @@ load_bird_data <- function(filename = "Data/Pre - Processed Data/data.csv") {
   ) %>%
     # Extract year from date for filtering
     mutate(year = lubridate::year(date)) %>%
-    filter(year >= 1985, year <= 2019)
+    filter(year >= 1998, year <= 2019)
 
   print(glue("Loaded dataframe with {nrow(df)} rows and {ncol(df)} columns"))
   print(glue("Unique species: {n_distinct(df$scientificName)}"))
@@ -138,24 +138,6 @@ load_bird_data <- function(filename = "Data/Pre - Processed Data/data.csv") {
       "credits_src",
       "markerPath"
     )))
-}
-
-get_species_list <- function(data) {
-  species <- data %>%
-    distinct(.data$scientificName, .data$commonName) %>%
-    arrange(.data$commonName) %>%
-    pull(.data$commonName)
-
-  species
-}
-
-get_order_list <- function(data) {
-  orders <- data %>%
-    distinct(.data$order) %>%
-    arrange(.data$order) %>%
-    pull(.data$order)
-
-  orders
 }
 
 filter_bird_data <- function(data,
