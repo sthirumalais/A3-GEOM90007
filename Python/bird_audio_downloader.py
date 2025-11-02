@@ -5,7 +5,6 @@ import ssl
 from typing import Dict, Any, Tuple, Optional
 
 def generate_citation_info(recording: Dict[str, Any]) -> Dict[str, Any]:
-    """Generate citation information for Creative Commons licenses"""
     lic = recording.get('lic', '')
     
     # Map license URLs to human-readable names
@@ -38,7 +37,6 @@ def generate_citation_info(recording: Dict[str, Any]) -> Dict[str, Any]:
 savePath = "audio_data/"
 
 def search_and_download_recording(searchTerms: str, birdName: str) -> Tuple[Optional[str], Optional[Dict[str, Any]]]:
-    """Search for Australian CC licensed recordings and download metadata"""
     # Create directory for this bird species
     path = savePath + birdName.replace(' ', '_').replace(':', '') + "/"
     if not os.path.exists(path):
@@ -98,7 +96,6 @@ def search_and_download_recording(searchTerms: str, birdName: str) -> Tuple[Opti
         return None, None
 
 def download_audio_file(searchTerms: str, birdName: str) -> bool:
-    """Download audio file and metadata for a bird species"""
     path, recording_data = search_and_download_recording(searchTerms, birdName)
     
     if not path or not recording_data:
@@ -309,7 +306,6 @@ birds = ['Acanthorhynchus tenuirostris',
  'Todiramphus sanctus']
 
 def download_all_birds() -> Tuple[int, int]:
-    """Download CC licensed audio files for all bird species"""
     successful_downloads = 0
     failed_downloads = 0
     
@@ -341,7 +337,6 @@ def download_all_birds() -> Tuple[int, int]:
     return successful_downloads, failed_downloads
 
 def generate_citation_report() -> Dict[str, Any]:
-    """Generate summary report of all downloaded recordings"""
     report = {
         "total_recordings": 0,
         "license_breakdown": {},

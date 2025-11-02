@@ -1,7 +1,3 @@
-/**
-  Scripts handling the behaviour for Intro page
- */
-
 const introPane = () => document.querySelector("[data-value='Intro'].tab-pane");
 
 const updateIntroPage = (pane, desiredPage) => {
@@ -49,10 +45,6 @@ const on_intro_btn_click = (event) => {
   }
 };
 
-/**
-  Binds click events to buttons
-  @returns {void}
- */
 const bind_intro_actions = () => {
   const pane = introPane();
   if (!pane) return;
@@ -69,10 +61,6 @@ const bind_intro_actions = () => {
   btn_right && btn_right.addEventListener("click", on_intro_btn_click);
 };
 
-/**
-  Show the intro panel on first run
-  @return {void}
- */
 const on_first_run = () => {
   const pane = introPane();
   if (!pane) return;

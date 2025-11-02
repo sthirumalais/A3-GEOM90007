@@ -1,7 +1,3 @@
-/**
-  Styles for the Intro panel
- */
-
 @mixin intro_panel() {
   @include panel('Intro') {
     --text-block-height: 100px;

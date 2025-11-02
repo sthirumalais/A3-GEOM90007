@@ -1,7 +1,3 @@
-/**
-  Styles for the SearchResults panel
- */
-
 @mixin search_results_panel() {
   @include panel('SearchResults') {
     @include frosted-panel();

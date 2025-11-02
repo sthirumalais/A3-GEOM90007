@@ -1,7 +1,3 @@
-/**
-  Scripts used in the Shiny app
- */
-
 import { check_user_agent } from "./user_agent.js";
 import { bind_button_actions } from "./buttons";
 import { slider_context_labels } from "./ui.js";

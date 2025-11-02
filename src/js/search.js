@@ -1,18 +1,6 @@
-/**
-  Handle search functions
- */
-
 const SEARCH_INPUT_ID = "search-input";
 const get_search_input = () => document.getElementById(SEARCH_INPUT_ID);
 
-/**
-  Query the openstreetmaps nominatim API with the query term
-  bounded by Melbourne coordinates
-  @param {string} query The search query.
-  @return {array} An array of objects returned from the API.
-  @note Response will return empty array if non-found or error.
-  @see https://nominatim.org/release-docs/develop/api/Search/
- */
 const search_osm = async (query) => {
   const trimmed_query = (query || "").trim();
   if (!trimmed_query) {
@@ -50,11 +38,6 @@ const search_osm = async (query) => {
   }
 }
 
-/**
-  Renders the search results in the SearchResults panel
-  @param {array} json the search results as an array of objects
-  @return {void}
- */
 const render_search_results = (json) => {
   const res_panel = document.querySelector("[data-value='SearchResults'].tab-pane");
   if (!res_panel) {
@@ -84,12 +67,10 @@ const render_search_results = (json) => {
         return;
       }
       
-      /** @fires set:loc */
       input.dispatchEvent(
         new CustomEvent("set:loc", {"detail": result})
       );
       
-      /** @fires close:panel */
       const res_panel_click = document.querySelector("[data-value='SearchResults'].tab-pane");
       res_panel_click && res_panel_click.dispatchEvent(
         new CustomEvent("close:panel", {"detail": result})
@@ -133,12 +114,6 @@ const render_search_results = (json) => {
   open_search_results();
 }
 
-/**
-  Renders a contextual message inside the search results panel
-  @param {string} message the alert message
-  @param {boolean} [open_panel=false] whether or not to trigger the panel opening
-  @returns {void}
- */
 const search_res_alert = (message, open_panel = false) => {
   const res_panel = document.querySelector("[data-value='SearchResults'].tab-pane");
   if (!res_panel) {
@@ -156,19 +131,10 @@ const search_res_alert = (message, open_panel = false) => {
   open_panel && open_search_results();
 }
 
-/**
-  Wrangle the display_name from Openstreetmap search results
-  @param {object} obj
-  @returns {array} of string
- */
 const osm_display_name = (obj) => {
   return obj.display_name && obj.display_name.split(",") || [];
 }
 
-/**
-  Aligns the position of the SearchResults panel and opens it
-  @returns {void}
- */
 const open_search_results = () => {
   const res_panel = document.querySelector("[data-value='SearchResults'].tab-pane");
   const search_input = get_search_input();
@@ -190,17 +156,11 @@ const open_search_results = () => {
   res_panel.classList.add("active");
 }
 
-/**
-  Closes the SearchResults panel
- */
 const close_search_results = () => {
   const res_panel = document.querySelector("[data-value='SearchResults'].tab-pane");
   res_panel && res_panel.classList.remove("active");
 }
 
-/**
-  On click event handler for the search box button
- */
 const search_panel_go = async () => {
   // Get the search query from the search input box
   const input = get_search_input();
@@ -222,11 +182,6 @@ const search_panel_go = async () => {
   render_search_results(results);
 }
 
-/**
-  Task runner for when a search is initiated
-  @returns {void}
-  @fires search:busy
- */
 const on_search_go = () => {
   // Apply styling changes
   const panel = document.querySelector("[data-value='Search'].tab-pane");
@@ -239,11 +194,6 @@ const on_search_go = () => {
   );
 }
 
-/**
-  Task runner for when a search has been completed
-  @returns {void}
-  @fires search:done
- */
 const on_search_done = () => {
   // Apply styling changes
   const panel = document.querySelector("[data-value='Search'].tab-pane");
@@ -256,9 +206,6 @@ const on_search_done = () => {
   );
 }
 
-/**
-  Uses the user's geolocation as the map location
- */
 const use_geolocation = () => {
   const on_success = (location) => {
     //location.coords.[latitude, longitude]
@@ -267,7 +214,6 @@ const use_geolocation = () => {
     }} = location;
     const input = document.getElementById("search-input");
       
-    /** @fires set:loc */
     input.dispatchEvent(
       new CustomEvent("set:loc", {"detail": {lat, lon}})
     );
@@ -302,31 +248,16 @@ const use_geolocation = () => {
   navigator.geolocation.getCurrentPosition(on_success, on_failure);
 }
 
-/**
-  Adds styling to the GPS icon
-  @returns {void}
- */
 const set_gps_indicator = () => {
   const icon = document.getElementById("button-gps");
   icon.classList.add("active");
 }
 
-/**
-  Removes styling to the GPS icon
-  @returns {void}
- */
 const remove_gps_indicator = () => {
   const icon = document.getElementById("button-gps");
   icon.classList.remove("active");
 }
 
-/**
-  Bind tasks related to search events
-  @returns {void}
-  @listens search:busy
-  @listens search:done
-  @listens set:loc
- */
 const bind_search_events = () => {
   const res_panel = document.querySelector("[data-value='SearchResults'].tab-pane");
   const input = get_search_input();

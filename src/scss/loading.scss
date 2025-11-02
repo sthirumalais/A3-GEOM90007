@@ -1,7 +1,3 @@
-/**
-  Styles for the loading indicator
- */
-
 @mixin loading_panel() {
   @include panel('Loading') {
     display: none;

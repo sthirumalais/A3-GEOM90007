@@ -1,14 +1,3 @@
-/**
-  UI related scripts
- */
-
-
-/**
-  Updates labels on the Radius slider to be more context friendly
-  Only formats labels for the radius slider (distance in km/m)
-  Leaves year range slider labels as plain years
-  @return {void}
- */
 const slider_context_labels = () => {
   // Find the radius slider specifically by its parent container
   const radiusSlider = document.querySelector('#filter_radius');

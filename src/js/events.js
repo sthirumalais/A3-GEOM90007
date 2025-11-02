@@ -1,13 +1,3 @@
-/**
-  Handling of reactive event messages from Shiny
- */
-
-/**
-  Opens a tabPanel while adding effects
-  @param {DOMElement} panel a DOM element representing a Shiny tabPanel
-  @param {boolean} [dimmer=true] whether to toggle dimmer panel
-  @return {boolean} True
- */
 const activate_panel = (panel, apply_dimmer = true) => {
   if (!panel) {
     return false;
@@ -28,12 +18,6 @@ const activate_panel = (panel, apply_dimmer = true) => {
   return true;
 }
 
-/**
-  Closes a tabPanel while adding effects
-  @param {DOMElement} panel a DOM element representing a Shiny tabPanel
-  @param {boolean} [dimmer=true] whether to toggle dimmer panel
-  @return {boolean} True
- */
 const deactivate_panel = (panel, apply_dimmer = true) => {
   if (!panel) {
     return false;
