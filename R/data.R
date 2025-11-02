@@ -69,15 +69,6 @@ load_bird_data <- function(filename = "Data/Pre - Processed Data/data.csv") {
     mutate(year = lubridate::year(date)) %>%
     filter(year >= 1998, year <= 2019)
 
-  print(glue("Loaded dataframe with {nrow(df)} rows and {ncol(df)} columns"))
-  print(glue("Unique species: {n_distinct(df$scientificName)}"))
-  print(
-    glue(
-      "Year range: {min(df$year, na.rm = TRUE)} - ",
-      "{max(df$year, na.rm = TRUE)}"
-    )
-  )
-
   image_folder <- df$imagePath
   image_file <- file.path(image_folder, paste0(basename(image_folder), ".jpg"))
   image_src <- file.path("bird-data", sub("^Data/", "", image_file))
@@ -140,13 +131,15 @@ load_bird_data <- function(filename = "Data/Pre - Processed Data/data.csv") {
     )))
 }
 
-filter_bird_data <- function(data,
-                             species = NULL,
-                             order = NULL,
-                             year_range = NULL,
-                             radius_range = NULL,
-                             center_location = NULL,
-                             rarity_filters = NULL) {
+filter_bird_data <- function(
+  data,
+  species = NULL,
+  order = NULL,
+  year_range = NULL,
+  radius_range = NULL,
+  center_location = NULL,
+  rarity_filters = NULL
+) {
   filtered <- data
 
   # Filter by species if provided
@@ -206,7 +199,9 @@ filter_bird_data <- function(data,
 
     # For each bird, check if there are duplicate species nearby
     for (i in seq_len(nrow(filtered))) {
-      if (!keep_rows[i]) next  # Already marked as duplicate
+      if (!keep_rows[i]) {
+        next
+      } # Already marked as duplicate
 
       # Find later observations of the same species
       same_species_later <- which(
