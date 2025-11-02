@@ -61,7 +61,18 @@ We gratefully acknowledge **BirdLife Australia** and the **Atlas of Living Austr
   Licensed under **CC BY-NC-ND 4.0** and **CC BY-NC-SA 4.0**.  
   Terms of Use: [https://xeno-canto.org/about/terms](https://xeno-canto.org/about/terms)
 
-  
+
+
+## Third-Party Libraries
+
+This project uses the **tableau-in-shiny** R library (version 1.2, 2024-09-04) written by **Alan Thomas** from the University of Melbourne. This library is provided as part of the GEOM90007 Information Visualisation course materials and enables seamless embedding of Tableau Public visualizations in Shiny applications using the Tableau Embedding API v3.
+
+- **File**: `R/tableau-in-shiny-v1.2.R`
+- **Author**: Alan Thomas, University of Melbourne
+- **Copyright**: 2023-2024 The University of Melbourne
+- **License**: MIT License
+
+We gratefully acknowledge the provision of this library code for educational purposes in the GEOM90007 course.
 
 ### Limitations & Future Work
 

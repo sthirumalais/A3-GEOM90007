@@ -334,12 +334,6 @@ const bind_search_events = () => {
     return;
   }
 
-  // On search go
-  input.addEventListener("search:busy", () => {});
-  
-  // On search done
-  input.addEventListener("search:done", () => {});
-  
   // On results selection
   input.addEventListener("set:loc", (event) => {
     const { detail: data } = event || {};
@@ -356,8 +350,6 @@ const bind_search_events = () => {
 export {
   search_osm,
   search_panel_go,
-  on_search_go,
-  on_search_done,
   bind_search_events,
   open_search_results,
   close_search_results,
