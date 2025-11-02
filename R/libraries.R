@@ -12,22 +12,18 @@ dependencies <- c(
 )
 
 load_dependencies <- function(dependencies) {
-  print("Loading dependencies...")
   for (package in dependencies) {
     tryCatch(
       {
         library(package, character.only = TRUE)
-        print(sprintf("Loaded %s", package))
       },
       error = function(e) {
         message(sprintf("Installing %s...", package))
         install.packages(package, repos = "https://cloud.r-project.org")
         library(package, character.only = TRUE)
-        print(sprintf("Installed and loaded %s", package))
       }
     )
   }
-  print("All dependencies loaded successfully!")
 }
 
 # Load dependencies

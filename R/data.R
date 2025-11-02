@@ -42,8 +42,6 @@ haversine_km <- function(lat, lon, center_lat, center_lon) {
 }
 
 load_bird_data <- function(filename = "Data/Pre - Processed Data/data.csv") {
-  print(glue("Loading bird data from {filename}"))
-
   # Read the CSV file
   df <- readr::read_csv(
     filename,
