@@ -34,7 +34,8 @@ headers <- tags$head(
     src = "https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"
   ),
   # nolint start: line_length_linter
-  tags$script(HTML("
+  tags$script(HTML(
+    "
     mermaid.initialize({
       startOnLoad: false,
       theme: 'base',
@@ -54,8 +55,10 @@ headers <- tags$head(
         padding: 10
       }
     });
-  ")),
-  tags$script(HTML("
+  "
+  )),
+  tags$script(HTML(
+    "
     (function() {
       var pendingDefinitions = {};
 
@@ -142,7 +145,7 @@ headers <- tags$head(
                 result.bindFunctions(el);
               }
             }).catch(function(err) {
-              console.error(\"Mermaid rendering failed for\", targetId, err);
+              // Mermaid rendering failed
             });
           }
 
@@ -180,16 +183,17 @@ headers <- tags$head(
         document.addEventListener(\"shiny:connected\", setupMermaidHandlers, { once: true });
       }
     })();
-  ")),
+  "
+  )),
   # javascript
   # nolint end
   tags$script(
     src = "assets/shiny_app.js"
-  )
-  ,
+  ),
   # helper to update Tableau viz year filter from Shiny
   # nolint start: line_length_linter
-  tags$script(HTML('
+  tags$script(HTML(
+    '
     window.updateTableauYearRange = function(id, minYear, maxYear) {
       let attempts = 25;
       const minDate = new Date(minYear, 0, 1);
@@ -215,7 +219,6 @@ headers <- tags$head(
           await applyTo(viz.workbook.activeSheet);
         } catch (e) {
           if (attempts-- > 0) return void setTimeout(tick, 160);
-          console.error("updateTableauYearRange error", e);
         }
       };
       tick();
@@ -223,41 +226,37 @@ headers <- tags$head(
 
     window.updateTableauScientificName = function(id, scientificName) {
       let attempts = 25;
-      console.log("[updateTableauScientificName] Called for ID:", id, "ScientificName:", scientificName);
       const tick = async () => {
         try {
           const viz = document.getElementById(id);
           if (!viz || !viz.workbook) {
-            console.warn("[updateTableauScientificName] Viz not found or workbook not loaded for ID:", id);
             if (attempts-- > 0) return void setTimeout(tick, 160);
             return;
           }
           const applyTo = async (sheet) => {
             if (!sheet) return;
             if (typeof sheet.applyFilterAsync === "function") {
-              console.log("[updateTableauScientificName] Applying filter to activeSheet", id, scientificName);
               await sheet.applyFilterAsync("Scientific Name", [scientificName], "replace");
             }
             if (sheet.worksheets && sheet.worksheets.length) {
               for (const ws of sheet.worksheets) {
                 try {
-                  console.log("[updateTableauScientificName] Applying filter to worksheet", ws.name || ws, scientificName);
                   await ws.applyFilterAsync("Scientific Name", [scientificName], "replace");
                 } catch (e) {
-                  console.warn("Could not apply filter to worksheet", ws, e);
+                  // Could not apply filter to worksheet
                 }
               }
             }
           };
           await applyTo(viz.workbook.activeSheet);
         } catch (e) {
-          console.error("[updateTableauScientificName] Error during filtering:", e);
           if (attempts-- > 0) return void setTimeout(tick, 160);
         }
       };
       tick();
     };
-  '))
+  '
+  ))
   # nolint end
 )
 
@@ -410,7 +409,7 @@ search_panel <- tabPanel(
         inputId = "search-input",
         label = NULL,
         value = "Melbourne",
-        placeholder = "Search Destination"
+        placeholder = "Search Location"
       ),
       tags$div(
         id = "button-gps",

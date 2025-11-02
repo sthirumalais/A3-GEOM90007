@@ -133,34 +133,6 @@
               transform: translate(-50%, 90%);
             }
           }
-          
-          &.cost {
-            --gap: 50px;
-            gap: var(--gap);
-            
-            hr.accent-connect {
-              border: map.get($colors, "accent") 1px solid;
-              border-bottom: none;
-              margin: 0 calc(-1 * var(--gap));
-              width: 100%;
-            }
-            
-            .shiny-input-container {
-              --indicator-gap: 1em;
-              &::after {
-                content: "$";
-                display: block;
-                position: absolute;
-                left: var(--indicator-gap);
-                top: 50%;
-                transform: translate(-50%, -50%);
-              }
-              
-              input[type="number"] {
-                text-align: right;
-              }
-            }
-          }
         }
 
         .shiny-input-container {

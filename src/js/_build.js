@@ -1,5 +1,5 @@
 /**
-  Scripts used in the Shiny app - Adapted for Bird Visualization
+  Scripts used in the Shiny app
  */
 
 import { check_user_agent } from "./user_agent.js";

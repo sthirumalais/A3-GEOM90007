@@ -73,7 +73,6 @@ setUpTableauInShiny <- function() {
             value: param.currentValue.value
           });
         });
-        console.log("added events for", id)
       };
     </script>')
   )

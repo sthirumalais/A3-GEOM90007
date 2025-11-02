@@ -385,8 +385,6 @@ def generate_citation_report() -> Dict[str, Any]:
 
 # Main execution
 if __name__ == "__main__":
-        download_all_birds()
-        generate_citation_report()
-        print("Download completed successfully!")
-    else:
-        print("Test failed. Check error messages above.")
+    download_all_birds()
+    generate_citation_report()
+    print("Download completed successfully!")

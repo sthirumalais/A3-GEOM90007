@@ -1,5 +1,5 @@
 /**
-  UI related scripts - Adapted for Bird Visualization
+  UI related scripts
  */
 
 

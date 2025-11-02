@@ -10,10 +10,6 @@ const copyFiles = [
   {
     from: 'src/img/*.*',
     to: '[name].[ext]'
-  },
-  {
-    from: 'src/md/*.md',
-    to: '[name].[ext]'
   }
 ];
 

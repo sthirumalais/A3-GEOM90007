@@ -44,7 +44,6 @@ const search_osm = async (query) => {
     }
     return await result.json();
   } catch (error) {
-    console.error("Error querying OpenStreetMap:", error);
     return [];
   } finally {
     on_search_done();
@@ -212,7 +211,7 @@ const search_panel_go = async () => {
   const query = input.value || "";
   const trimmed_query = query.trim();
   if (!trimmed_query) {
-    search_res_alert("Please enter a destination.", true);
+    search_res_alert("Please enter a location.", true);
     return;
   }
   

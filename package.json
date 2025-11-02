@@ -7,9 +7,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/johnsonjzhou/geom90007-a3.git"
+    "url": "https://github.com/sthirumalais/A3-GEOM90007.git"
   },
-  "author": "Johnson Zhou (zhoujj@student.unimelb.edu.au)",
+  "author": "University of Melbourne GEOM90007 Assignment 3 Team",
   "license": "MIT",
   "browserslist": [
     "defaults",
