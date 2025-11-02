@@ -1,0 +1,180 @@
+/**
+  Styles for Shiny modal dialogs
+ */
+
+// Blur backdrop when modal is open
+.modal-backdrop {
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+
+  &.show {
+    opacity: 0.5;
+  }
+}
+
+// Alternative: Apply blur directly to content behind modal
+body.modal-open {
+  .container {
+    filter: blur(5px);
+    -webkit-filter: blur(5px);
+  }
+
+  .modal {
+    filter: none;
+    -webkit-filter: none;
+  }
+}
+
+// Bird detail modal styling
+.modal-dialog {
+  max-width: 600px;
+  margin: 30px auto;
+
+  .modal-content {
+    border-radius: 10px;
+    border: none;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  }
+
+  .modal-header {
+    border-bottom: 1px solid #dee2e6;
+    padding: 15px 20px;
+
+    .modal-title {
+      font-size: 24px;
+      font-weight: 600;
+    }
+
+    button.close {
+      padding: 0;
+      margin: 0;
+      font-size: 28px;
+      opacity: 0.5;
+
+      &:hover {
+        opacity: 0.8;
+      }
+    }
+  }
+
+  .modal-body {
+    padding: 20px;
+    max-height: calc(100vh - 200px);
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    // Custom scrollbar styling for webkit browsers
+    &::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 10px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: #888;
+      border-radius: 10px;
+
+      &:hover {
+        background: #555;
+      }
+    }
+
+    // For Firefox
+    scrollbar-width: thin;
+    scrollbar-color: #888 #f1f1f1;
+  }
+
+  .modal-footer {
+    border-top: 1px solid #dee2e6;
+    padding: 15px 20px;
+
+    button {
+      border-radius: 6px;
+      padding: 8px 16px;
+      font-size: 14px;
+      transition: all 0.3s ease;
+    }
+  }
+}
+
+// Bird detail modal specific content styling
+.bird-detail-modal {
+
+  .bird-image {
+    margin-bottom: 15px;
+
+    img {
+      max-width: 100%;
+      border-radius: 10px;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+    }
+  }
+
+  .taxonomy-section {
+    margin: 20px 0;
+
+    h4 {
+      text-align: center;
+      margin-bottom: 15px;
+      font-size: 16px;
+    }
+
+    .mermaid {
+      text-align: center;
+      background: #fafafa;
+      padding: 15px;
+      border-radius: 8px;
+    }
+  }
+
+  hr {
+    margin: 15px 0;
+    border: 0;
+    border-top: 1px solid #E9E9EA;
+  }
+
+  p {
+    margin: 10px 0;
+    line-height: 1.6;
+
+    strong {
+      font-weight: 600;
+    }
+
+    em {
+      font-style: italic;
+    }
+  }
+
+  .bird-audio {
+    margin-top: 15px;
+
+    h4 {
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+
+    audio {
+      width: 100%;
+      margin: 10px 0;
+    }
+
+    .audio-credits {
+      font-size: 12px;
+      margin-top: 5px;
+
+      a {
+        text-decoration: none;
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+  }
+}

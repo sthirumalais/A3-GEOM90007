@@ -1,0 +1,191 @@
+/**
+  Styles for the Intro panel
+ */
+
+@mixin intro_panel() {
+  @include panel('Intro') {
+    --text-block-height: 100px;
+    --page-offset: 0;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    padding: 50px calc((100% - (390px)) / 2);
+    grid-template-columns: 100%;
+    grid-template-rows: 12vh 1fr var(--text-block-height) 10vh;
+    background: map.get($colors, "background");
+    justify-items: center;
+    align-items: center;
+    display: grid;
+    opacity: 0;
+    z-index: -1;
+    transition: all 0.3s ease;
+    
+    &.active {
+      opacity: 1;
+      z-index: 50;
+    }
+    
+    @for $i from 1 through 3 {
+      &.page-#{$i} {
+        --page-offset: #{$i - 1};
+
+        .page:nth-child(#{$i}) {
+          opacity: 1;
+        }
+
+        .dot:nth-child(#{$i}) {
+          --size: 20px;
+          background: map.get($colors, "accent");
+        }
+      }
+    }
+    
+    img.logo {
+      grid-column-start: 1;
+      grid-row-start: 1;
+      display: block;
+      width: 60%;
+      max-width: 350px;
+    }
+    
+    .pages {
+      grid-column-start: 1;
+      grid-row-start: 2;
+      grid-row-end: 4;
+      display: grid;
+      grid-template-columns: 100% 100% 100%;
+      grid-template-rows: 100%;
+      transition: transform 0.3s ease;
+      width: 100%;
+      height: 100%;
+      transform: translate(calc(-100% * var(--page-offset)), 0);
+      
+      .page {
+        display: grid;
+        grid-template-columns: 1fr;
+        grid-template-rows: 1fr var(--text-block-height);
+        justify-items: center;
+        align-items: center;
+        opacity: 0;
+        transition: opacity 0.1s ease;
+        
+        img {
+          display: block;
+          width: 60%;
+        }
+        
+        p {
+          margin: 0;
+          font-size: 2vh;
+          padding: 0 15%;
+          text-align: center;
+        }
+      }
+    }
+    
+    .bubble {
+      grid-column-start: 1;
+      grid-row-start: 2;
+      display: block;
+      width: 42vh;
+      height: 40vh;
+      border-radius: 42% 40% 40% 45% / 54% 38% 50% 32%;
+      animation: 8s bubble infinite;
+      animation-timing-function: ease-in-out;
+      animation-direction: alternate;
+      background: mix(
+        map.get($colors, "highlight"),
+        map.get($colors, "background"),
+        24%
+      );
+      z-index: -1;
+      
+      &.one {
+        transform: translate(-18%, -12%) rotate(48deg) scale(1.1);
+      }
+
+      &.two {
+        transform: translate(18%, 6%) rotate(20deg) scale(1.0);
+      }
+      
+      @keyframes bubble {
+        0% {
+          border-radius: 42% 40% 40% 45% / 54% 38% 50% 32%;
+        }
+        25% {
+          border-radius: 60% 30% 55% 35% / 40% 60% 35% 55%;
+        }
+        50% {
+          border-radius: 35% 60% 30% 55% / 65% 30% 60% 25%;
+        }
+        75% {
+          border-radius: 55% 35% 60% 30% / 45% 55% 40% 60%;
+        }
+        100% {
+          border-radius: 42% 40% 40% 45% / 54% 38% 50% 32%;
+        }
+      }
+    }
+    
+    .dots {
+      grid-column-start: 1;
+      grid-row-start: 4;
+      display: grid;
+      grid-template-columns: 1fr 20px 20px 20px 1fr;
+      grid-template-rows: 100%;
+      justify-items: center;
+      align-items: center;
+      gap: 8px;
+      
+      .dot {
+        --size: 15px;
+        display: block;
+        width: var(--size);
+        height: var(--size);
+        border: 0;
+        border-radius: var(--size);
+        background: map.get($colors, "lightgray");
+        grid-row-start: 1;
+        transition: all 0.3s ease;
+        
+        @for $i from 1 through 3 {
+          &.seq-#{$i} {
+            grid-column-start: $i + 1;
+          }
+        }
+      }
+    }
+    
+    .button {
+      top: calc(12vh + 35%);
+      transform: translate(0, -50%);
+      --btn-size: 50px;
+      width: 70px !important;
+      height: 70px !important;
+      
+      &.left {
+        @include button-common("keyboard_double_arrow_left");
+        color: map.get($colors, "gray");
+        position: absolute;
+        left: calc(50% - 21vh - 160px);
+        
+        @include responsive-tablet() {
+          left: calc(50% - 21vh - 170px);
+        }
+      }
+      
+      &.right {
+        @include button-common("keyboard_double_arrow_right");
+        color: map.get($colors, "gray");
+        position: absolute;
+        right: calc(50% - 21vh - 160px);
+        
+        @include responsive-tablet() {
+          right: calc(50% - 21vh - 170px);
+        }
+      }
+    }
+  }
+}

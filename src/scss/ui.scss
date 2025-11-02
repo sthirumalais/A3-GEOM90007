@@ -1,0 +1,257 @@
+/**
+  Styles for the shiny UI
+ */
+@import "./buttons.scss";
+@import "./panels.scss";
+@import "./filters.scss";
+@import "./search.scss";
+@import "./map.scss";
+@import "./search_results.scss";
+@import "./dimmer.scss";
+@import "./intro.scss";
+@import "./loading.scss";
+@import "./modal.scss";
+
+$border-radius: 6px;
+$font-primary: "brandon-grotesque", "Helvetica", "Arial", sans-serif;
+$font-serif: "PT Serif", serif;
+$font-size: 16px;
+$box-shadow: 0px 3px 7px 0px rgba(0, 0, 0, 0.12);
+
+$colors: (
+  "background": #FFFFFF,
+  "lightgray": #E9E9EA,
+  "gray": #A8A8B5,
+  "darkgray": #949598,
+  "foreground": #52525F,
+  "accent": #2D8B57,      // Forest green for bird/nature theme
+  "highlight": #7CB342    // Light green for highlights
+);
+
+// Responsive mixin
+@mixin responsive($min-screen-width) {
+  @media screen and (min-width: #{$min-screen-width}) {
+    @content;
+  }
+}
+
+// Responsive breakpoint for tablet
+@mixin responsive-tablet() {
+  @include responsive(768px) {
+    @content;
+  }
+}
+
+// Responsive breakpoint for wide tablet
+@mixin responsive-tablet-wide() {
+  @include responsive(992px) {
+    @content;
+  }
+}
+
+// Frosted panel effects
+@mixin frosted-panel {
+  background-color: rgba(map.get($colors, "background"), 0.9);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  border-radius: calc($border-radius + 4px);
+  border: 0;
+  box-shadow: none;
+}
+
+@mixin frosted-panel-btn {
+  background-color: rgba(255,255,255,0.9);
+  backdrop-filter: saturate(180%) brightness(150%) blur(5px);
+  -webkit-backdrop-filter: saturate(180%) brightness(150%) blur(5px);
+}
+
+// Responsive breakpoint for desktop
+@mixin responsive-desktop() {
+  @include responsive(1200px) {
+    @content;
+  }
+}
+
+@mixin filter_label() {
+  font-size: 14px;
+  font-weight: 400;
+  color: map.get($colors, "foreground");
+  padding: 0;
+}
+
+html {
+  font-size: $font-size;
+  
+  body {
+    color: map.get($colors, "foreground");
+    background-color: map.get($colors, "background");
+    font-family: $font-primary;
+    font-weight: 400;
+  }
+}
+
+div.spacer {
+  display: block;
+  width: 100%;
+  height: 16px;
+  
+  &.h32 {
+    height: 32px;
+  }
+  
+  &.h48 {
+    height: 48px;
+  }
+  
+  &.h64 {
+    height: 64px;
+  }
+}
+
+.form-control {
+  box-shadow: none;
+  
+  &:focus {
+    outline: 0;
+    border: 0;
+    box-shadow: none;
+  }
+}
+
+// Hide the display bar
+.navbar {
+  display: none;
+}
+
+// Shiny containers
+.container {
+  // Make container fill viewport and remove default Shiny tab styles
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  margin: 0;
+
+  .tab-content {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+
+  .tab-pane {
+    // Base panels should always be visible
+    &[data-value="Map"],
+    &[data-value="Search"],
+    &[data-value="Filters"] {
+      display: block !important;
+    }
+
+    // Map pane
+    @include map_panel();
+
+    // Search pane
+    @include search_panel();
+
+    // SearchResults pane
+    @include search_results_panel();
+
+    // Filters pane
+    @include filters_panel();
+
+    // Dimmer pane, for visual effects
+    @include dimmer_panel();
+
+    // Intro pane, for visual effects
+    @include intro_panel();
+
+    // Loading pane
+    @include loading_panel();
+  }
+}
+
+// Shiny Alert
+.sweet-overlay.sweet-overlay {
+  @include dimmer-style();
+  transition: none;
+  z-index: 10000;
+}
+
+.sweet-alert.sweet-alert {
+  // @include frosted-panel();
+  background: map.get($colors, "background");
+  padding: 15px !important;
+  font-family: $font-primary;
+  width: 350px !important;
+  max-width: 350px;
+  margin: 0 !important;
+  transform: translate(-50%, -50%) !important;
+  left: 50% !important;
+  animation: none !important;
+  
+  h2 {
+    font-size: 18px;
+    margin: 0;
+    margin-bottom: 6px;
+    display: none;
+  }
+  
+  .sa-icon {
+    display: none !important;
+  }
+  
+  .bay-info-wrapper {
+    --icon-size: 35px;
+    display: grid;
+    grid-template-columns: 1fr var(--icon-size);
+    grid-template-rows: 1fr;
+    gap: 10px;
+    justify-items: start;
+    align-items: center;
+    
+    .bay-info-details {
+      p {
+        text-align: left;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        color: map.get($colors, "foreground");
+        
+        b {
+          font-weight: 600;
+        }
+      }
+    }
+    
+    .bay-info-icons {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 5px;
+      width: var(--icon-size);
+      height: 100%;
+      
+      & > img {
+        width: var(--icon-size);
+        
+        &.hidden {
+          display: none;
+        }
+      }
+      
+      img.meter_type {
+        width: var(--icon-size);
+      }
+      
+      img.disability {
+        width: var(--icon-size);
+      }
+      
+      img.free {
+        width: var(--icon-size);
+      }
+    }
+  }
+}

@@ -53,3 +53,20 @@ air.toml
 .vscode/extensions.json
 .vscode/settings.json
 .vscode/
+
+# Node/JS build artefacts
+node_modules/
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Python bytecode
+__pycache__/
+*.py[cod]
+
+# Local environment overrides
+.env
+.env.*
+
+# Misc editor folders
+.idea/

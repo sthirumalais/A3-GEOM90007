@@ -76,10 +76,14 @@ audio_mapping <- data.frame(
   audioPath = sapply(audio_dirs, function(d) {
     mp3_files <- list.files(
       file.path("Data/Audio Data", d),
-      "*.mp3",
+      pattern = "\\.mp3$",
       full.names = FALSE
     )
-    file.path("Data/Audio Data", d, mp3_files[1])
+    if (length(mp3_files) > 0) {
+      file.path("Data/Audio Data", d, mp3_files[1])
+    } else {
+      NA_character_
+    }
   }),
   creditsPath = sapply(audio_dirs, function(d) {
     file.path("Data/Audio Data", d, "single_recording.json")
