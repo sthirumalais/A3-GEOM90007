@@ -18,7 +18,6 @@ shiny::addResourcePath("assets", "www")
 shiny::addResourcePath("bird-data", "Data")
 
 # Run the app
-# Create app object
 app <- shinyApp(ui = ui, server = server)
 
 # Launch in external browser

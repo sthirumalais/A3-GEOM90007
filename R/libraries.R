@@ -5,7 +5,6 @@ dependencies <- c(
   "readr",
   "leaflet",
   "htmltools",
-  "glue",
   "lubridate", # For date handling and year extraction
   "jsonlite", # For parsing audio credits JSON
   "rlang"

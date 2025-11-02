@@ -50,16 +50,11 @@ def download_and_resize_image(url, bird_name, size = (256, 256), retries = 3):
     return False
 
 
-failed_log = []
-
 with open(input_csv, newline='', encoding = "utf-8") as f:
     reader = csv.DictReader(f)
     for row in reader:
         bird_name = row.get("scientific_name", "").strip()
         url = row.get("image_url", "").strip()
 
-        ok = download_and_resize_image(url, bird_name)
-        if not ok:
-            failed_log.append({"scientific_name": bird_name, "image_url": url})
-
+        download_and_resize_image(url, bird_name)
         time.sleep(0.3)  # prevent throttling

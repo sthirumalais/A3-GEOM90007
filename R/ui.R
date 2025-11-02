@@ -1,6 +1,5 @@
 library(shiny)
 library(leaflet)
-library(glue)
 library(htmltools)
 
 # Headers
@@ -10,7 +9,7 @@ headers <- tags$head(
   tags$link(
     rel = "icon",
     type = "image/x-icon",
-    href = "assets/favicon.svg"
+    href = "assets/naarmwings-logo.svg"
   ),
   # web fonts
   tags$link(

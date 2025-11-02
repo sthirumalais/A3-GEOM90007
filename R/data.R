@@ -1,6 +1,5 @@
 library(dplyr)
 library(readr)
-library(glue)
 library(lubridate)
 library(rlang)
 
@@ -95,7 +94,7 @@ load_bird_data <- function(filename = "Data/Pre - Processed Data/data.csv") {
   df %>%
     mutate(
       markerPath = file.path(
-        "bird-data/Markers_new",
+        "bird-data/Markers",
         paste0(.data$order, "_", .data$rarityCategory, ".svg")
       ),
       image_file = image_file,
@@ -194,7 +193,9 @@ filter_bird_data <- function(
     keep_rows <- rep(TRUE, nrow(filtered))
 
     for (i in seq_len(nrow(filtered))) {
-      if (!keep_rows[i]) next
+      if (!keep_rows[i]) {
+        next
+      }
 
       same_species_later <- which(
         filtered$scientificName == filtered$scientificName[i] &

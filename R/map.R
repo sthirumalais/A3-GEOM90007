@@ -1,7 +1,6 @@
 library(dplyr)
 library(leaflet)
 library(htmltools)
-library(glue)
 
 # Map helpers
 
@@ -29,7 +28,7 @@ compose_marker_icons <- function(orders, rarities) {
       rarity <- rarities[[idx]]
 
       candidate_path <- sprintf(
-        "bird-data/Markers_new/%s_%s.svg",
+        "bird-data/Markers/%s_%s.svg",
         order,
         rarity
       )
