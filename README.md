@@ -1,5 +1,13 @@
 # Bird Watch Visualization App
 
+<p align="center">
+  <img src="Data/Logo/NaarmWings Logo.svg" alt="NaarmWings Logo" width="220"/>
+</p>
+
+### 🌐 [Access the Live Shiny App](https://naarm-wings.shinyapps.io/a3-geom90007/)
+
+---
+
 ## About This Project
 
 This is our **Assignment 3** for **Information Visualisation (GEOM90007)** at the University of Melbourne. We built an interactive app that shows bird sightings around Melbourne using R Shiny and Tableau.
@@ -13,6 +21,8 @@ The app lets users explore where different bird species have been spotted in Mel
 - **Harish Kannan** - [harish.kannan@student.unimelb.edu.au](mailto:harish.kannan@student.unimelb.edu.au)
 - **Mahek Jain** - [mahek.jain@student.unimelb.edu.au](mailto:mahek.jain@student.unimelb.edu.au)
 
+---
+
 ## Data We Used
 
 We got our bird sighting data from **BirdLife Australia's Birdata** database through the **Atlas of Living Australia**. The dataset has over 32,000 bird observation records within the **City of Melbourne (LGA: Melbourne)**.
@@ -22,9 +32,9 @@ We gratefully acknowledge **BirdLife Australia** and the **Atlas of Living Austr
 ### Data Citation
 
 > Atlas of Living Australia occurrence download at [https://biocache.ala.org.au/occurrences/search](https://biocache.ala.org.au/occurrences/search) accessed on 20 October 2025.  
-> Descriptive and Image content retrieved via the Wikipedia REST API accessed on 20 October 2025.
-> Audio content accessed via the Xeno-Canto API on 20 October 2025 for academic, non-commercial use.
-> Morphological trait data derived from the AVONET global bird dataset and merged with species occurrence records using the scientific name field accessed on 22 October 2025.
+> Descriptive and Image content retrieved via the Wikipedia REST API accessed on 20 October 2025.  
+> Audio content accessed via the Xeno-Canto API on 20 October 2025 for academic, non-commercial use.  
+> Morphological trait data derived from the AVONET global bird dataset and merged with species occurrence records using the scientific name field accessed on 22 October 2025.  
 > Spatial boundary and locality shapefiles obtained from the City of Melbourne Open Data Portal and Geoscape Administrative Boundaries accessed on 25 October 2025.
 
 **DOIs:**
@@ -62,19 +72,73 @@ We gratefully acknowledge **BirdLife Australia** and the **Atlas of Living Austr
   Licensed under **CC BY-NC-ND 4.0** and **CC BY-NC-SA 4.0**.  
   Terms of Use: [https://xeno-canto.org/about/terms](https://xeno-canto.org/about/terms)
 
-## Third-Party Libraries
+---
+
+### Third-Party Libraries
 
 This project uses the **tableau-in-shiny** R library (version 1.2, 2024-09-04) written by **Alan Thomas** from the University of Melbourne. This library is provided as part of the GEOM90007 Information Visualisation course materials and enables seamless embedding of Tableau Public visualizations in Shiny applications using the Tableau Embedding API v3.
 
-- **File**: `R/tableau-in-shiny-v1.2.R`
-- **Author**: Alan Thomas, University of Melbourne
-- **Copyright**: 2023-2024 The University of Melbourne
-- **License**: MIT License
+- **File**: `R/tableau-in-shiny-v1.2.R`  
+- **Author**: Alan Thomas, University of Melbourne  
+- **Copyright**: 2023–2024 The University of Melbourne  
+- **License**: MIT License  
 
 We gratefully acknowledge the provision of this library code for educational purposes in the GEOM90007 course.
 
-### Limitations & Future Work
+---
 
-- Audio data was not available for **8 bird species**, resulting in missing playback functionality for those entries.  
-- The **morphological dataset (AVONET)** has been prepared but not yet integrated into the current interface.  
-  Future versions will incorporate this dataset to enhance the visual and analytical components of the application.
+### 🧭 How to Run the App
+
+> ⚠️ **Note:** This app uses CSS styles that are not supported by the built-in RStudio viewer.  
+> For the best experience, open the app in an **external browser**.
+
+### Install dependencies
+
+```r
+source("./R/libraries.R")
+
+Running the Shiny App
+
+At the root project directory:
+
+shiny::runApp()
+
+Running the Shiny App silently
+
+shiny::runApp(launch.browser = FALSE)
+```
+
+---
+
+### 🏗️ Building
+
+Directory Tree
+
+root
+├── Data: data sources for the dashboard
+├── R: supporting R scripts for the app
+├── src: supporting non-R source files and assets
+└── www: production non-R files and assets for use by the app
+
+Building supporting (non-R) source files (optional)
+
+Non-R source files are built using webpack, transforming from ./src to ./www.
+
+#### install node modules
+```
+npm install
+```
+
+#### build
+```
+npm run build
+```
+
+---
+
+### Limitations & Future Work
+  -	Audio data was not available for 8 bird species, resulting in missing playback functionality for those entries.
+  -	The morphological dataset (AVONET) has been prepared but not yet integrated into the current interface.
+Future versions will incorporate this dataset to enhance the visual and analytical components of the application.
+
+---
