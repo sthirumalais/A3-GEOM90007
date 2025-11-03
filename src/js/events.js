@@ -1,13 +1,3 @@
-/**
-  Handling of reactive event messages from Shiny
- */
-
-/**
-  Opens a tabPanel while adding effects
-  @param {DOMElement} panel a DOM element representing a Shiny tabPanel
-  @param {boolean} [dimmer=true] whether to toggle dimmer panel
-  @return {boolean} True
- */
 const activate_panel = (panel, apply_dimmer = true) => {
   if (!panel) {
     return false;
@@ -28,12 +18,6 @@ const activate_panel = (panel, apply_dimmer = true) => {
   return true;
 }
 
-/**
-  Closes a tabPanel while adding effects
-  @param {DOMElement} panel a DOM element representing a Shiny tabPanel
-  @param {boolean} [dimmer=true] whether to toggle dimmer panel
-  @return {boolean} True
- */
 const deactivate_panel = (panel, apply_dimmer = true) => {
   if (!panel) {
     return false;
@@ -44,22 +28,15 @@ const deactivate_panel = (panel, apply_dimmer = true) => {
 
   if (apply_dimmer && dimmer) {
     dimmer.classList.remove("dim");
+    // Remove all event listeners by replacing element with clone
+    // https://stackoverflow.com/questions/9251837/how-to-remove-all-listeners-in-an-element
     dimmer.replaceWith(dimmer.cloneNode(true));
   }
 
   return true;
 }
 
-/**
-  Loads and binds event handlers for Shiny custom messages
-  @return void
- */
-const load_event_handlers = () => {
-  // Insert handlers here
-}
-
 export {
   activate_panel,
-  deactivate_panel,
-  load_event_handlers
+  deactivate_panel
 };

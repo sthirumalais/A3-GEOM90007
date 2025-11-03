@@ -1,7 +1,3 @@
-/**
-  Styles for the Search panel
- */
-
 @mixin search_panel() {
   @include panel('Search') {
     @include panel-common();

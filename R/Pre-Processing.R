@@ -1,6 +1,5 @@
 library(dplyr)
 
-# Read data
 sightings_data <- read.csv(
   "Data/Sightings Data/records-2025-10-20.csv"
 )
@@ -8,7 +7,6 @@ wikipedia_data <- read.csv(
   "Data/Description Data/bird_wikipedia_data.csv"
 )
 
-# Select only the required columns
 sightings_data <- sightings_data %>%
   select(
     scientificName,
@@ -23,7 +21,6 @@ sightings_data <- sightings_data %>%
     eventDate
   )
 
-# Clean data
 sightings_data$individualCount[is.na(sightings_data$individualCount)] <- 1
 
 sightings_data <- sightings_data %>%
@@ -187,22 +184,16 @@ sightings_data <- sightings_data %>%
     date = eventDate
   ) %>%
   select(
-    # Identification
     scientificName,
     commonName,
-    # Taxonomy
     order,
     family,
     genus,
-    # Geographic
     latitude,
     longitude,
-    # Temporal
     date,
-    # Observational
     count,
     rarityCategory,
-    # Media and content
     description,
     imagePath,
     markerPath,

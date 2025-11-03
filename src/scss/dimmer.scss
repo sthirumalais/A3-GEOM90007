@@ -1,7 +1,3 @@
-/**
-  Styles for the Dimmer panel
- */
-
 // Dimmer panel effects
 @mixin dimmer-style {
   background-color: rgba(map.get($colors, "darkgray"), 0.3);

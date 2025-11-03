@@ -1,3 +1,6 @@
+// Build configuration using Webpack 5
+// https://webpack.js.org/
+
 "use strict";
 const webpack = require("webpack");
 const path = require("path");
@@ -9,10 +12,6 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const copyFiles = [
   {
     from: 'src/img/*.*',
-    to: '[name].[ext]'
-  },
-  {
-    from: 'src/md/*.md',
     to: '[name].[ext]'
   }
 ];
@@ -64,17 +63,13 @@ module.exports = {
     ]
   },
   plugins: [
-    // delete existing packed assets
     new CleanWebpackPlugin({
       cleanOnceBeforeBuildPatterns: ["./www"]
     }),
-    // minify CSS
     new MiniCssExtractPlugin(),
-    // static copy of files
     new CopyPlugin({
       patterns: copyFiles
     }),
-    // clean up
     new RemoveEmptyScriptsPlugin(),
   ]
 };

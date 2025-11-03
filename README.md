@@ -27,7 +27,8 @@ We gratefully acknowledge **BirdLife Australia** and the **Atlas of Living Austr
 > Morphological trait data derived from the AVONET global bird dataset and merged with species occurrence records using the scientific name field accessed on 22 October 2025.
 > Spatial boundary and locality shapefiles obtained from the City of Melbourne Open Data Portal and Geoscape Administrative Boundaries accessed on 25 October 2025.
 
-**DOIs:**  
+**DOIs:**
+
 - Atlas of Living Australia: [https://doi.org/10.26197/ala.aaf6d193-fcff-4c92-9f10-607c1fbda846](https://doi.org/10.26197/ala.aaf6d193-fcff-4c92-9f10-607c1fbda846)
 
 **Data sources:**
@@ -61,7 +62,16 @@ We gratefully acknowledge **BirdLife Australia** and the **Atlas of Living Austr
   Licensed under **CC BY-NC-ND 4.0** and **CC BY-NC-SA 4.0**.  
   Terms of Use: [https://xeno-canto.org/about/terms](https://xeno-canto.org/about/terms)
 
-  
+## Third-Party Libraries
+
+This project uses the **tableau-in-shiny** R library (version 1.2, 2024-09-04) written by **Alan Thomas** from the University of Melbourne. This library is provided as part of the GEOM90007 Information Visualisation course materials and enables seamless embedding of Tableau Public visualizations in Shiny applications using the Tableau Embedding API v3.
+
+- **File**: `R/tableau-in-shiny-v1.2.R`
+- **Author**: Alan Thomas, University of Melbourne
+- **Copyright**: 2023-2024 The University of Melbourne
+- **License**: MIT License
+
+We gratefully acknowledge the provision of this library code for educational purposes in the GEOM90007 course.
 
 ### Limitations & Future Work
 

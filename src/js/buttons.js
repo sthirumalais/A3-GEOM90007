@@ -1,13 +1,6 @@
-/**
-  Handling of button clicks in JS
- */
 import { activate_panel, deactivate_panel } from "./events.js"
 import { search_panel_go, close_search_results, use_geolocation } from "./search.js";
 
-/**
-  Shows and hides the Filters panel
-  @return void
- */
 const filters_show_hide = () => {
   const panel = document.querySelector("[data-value='Filters'].tab-pane");
   if (!panel) {
@@ -19,33 +12,25 @@ const filters_show_hide = () => {
     : activate_panel(panel);
 }
 
-/**
-  Binds actions to custom buttons
-  @return void
- */
 const bind_button_actions = () => {
-  // Filters panel toggle
   const filters_toggle = document.getElementById("filters-show-hide");
   filters_toggle && filters_toggle.addEventListener(
     "click",
     filters_show_hide
   );
-  
-  // Search panel go button
+
   const search_button = document.getElementById("button-search");
   search_button && search_button.addEventListener(
     "click",
     search_panel_go
   );
-  
-  // Search panel GPS button
+
   const gps_button = document.getElementById("button-gps");
   gps_button && gps_button.addEventListener(
     "click",
     use_geolocation
   );
-  
-  // Keypress events at the search input
+
   const search_input = document.getElementById("search-input");
   search_input && search_input.addEventListener(
     "keydown",
@@ -66,8 +51,7 @@ const bind_button_actions = () => {
       }
     }
   );
-  
-  // Global click events
+
   document.addEventListener("click", (event) => {
     // Close the SearchResults panel when clicking outside
     const res_panel = document.querySelector("[data-value='SearchResults'].tab-pane");

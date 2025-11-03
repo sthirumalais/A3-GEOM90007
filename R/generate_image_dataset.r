@@ -1,4 +1,3 @@
-# import necessary packages
 library(magick)
 library(httr)
 library(jsonlite)
@@ -8,7 +7,6 @@ library(stringr)
 
 bird_data <- read.csv("Data/Pre - Processed Data/data.csv")
 
-# Unique list of bird species after pre-processing
 birds <- unique(bird_data$scientificName)
 
 `%||%` <- function(a, b) if (!is.null(a)) a else b
@@ -57,9 +55,8 @@ write.csv(
   bird_df,
   "Data/Description Data/bird_wikipedia_data.csv",
   row.names = FALSE
-) # save CSV file
+)
 
-# Check for missing images
 missing_species <- bird_df %>%
   filter(image_flag == "missing") %>%
   select(scientific_name, wikipedia_url)

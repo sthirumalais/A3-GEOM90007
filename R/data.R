@@ -1,23 +1,28 @@
-################################################################################
-# Data handlers for the app                                                    #
-################################################################################
 library(dplyr)
 library(readr)
-library(glue)
 library(lubridate)
+library(rlang)
 
-#' Calculate haversine distance (in kilometres) between vectors of coordinates
-#' @param lat numeric vector of latitudes
-#' @param lon numeric vector of longitudes
-#' @param center_lat single numeric latitude (degrees)
-#' @param center_lon single numeric longitude (degrees)
-#' @return numeric vector of distances in kilometres
+utils::globalVariables(c(
+  "scientificName",
+  "commonName",
+  "order",
+  "rarityCategory",
+  "distance",
+  "date",
+  "count",
+  "marker_id"
+))
+
+# Haversine distance function (vectorised)
+# Inspired by: https://github.com/johnsonjzhou/geom90007-a3
+# Additional mathematical formulation based on:
+# https://www.movable-type.co.uk/scripts/latlong.html
 haversine_km <- function(lat, lon, center_lat, center_lon) {
   if (length(lat) == 0) {
     return(numeric(0))
   }
 
-  # Convert degrees to radians
   rad <- pi / 180
   lat_rad <- lat * rad
   lon_rad <- lon * rad
@@ -35,16 +40,10 @@ haversine_km <- function(lat, lon, center_lat, center_lon) {
   earth_radius_km <- 6371.0088
   distance <- earth_radius_km * c
 
-  return(distance)
+  distance
 }
 
-#' Load bird sighting data from CSV
-#' @param filename the filename for the CSV file to be loaded
-#' @return dataframe
 load_bird_data <- function(filename = "Data/Pre - Processed Data/data.csv") {
-  print(glue("Loading bird data from {filename}"))
-
-  # Read the CSV file
   df <- readr::read_csv(
     filename,
     col_types = cols(
@@ -67,82 +66,101 @@ load_bird_data <- function(filename = "Data/Pre - Processed Data/data.csv") {
   ) %>%
     # Extract year from date for filtering
     mutate(year = lubridate::year(date)) %>%
-    filter(year >= 1985, year <= 2019)
+    filter(year >= 1998, year <= 2019)
 
-  print(glue("Loaded dataframe with {nrow(df)} rows and {ncol(df)} columns"))
-  print(glue("Unique species: {n_distinct(df$scientificName)}"))
-  print(glue("Year range: {min(df$year, na.rm = TRUE)} - {max(df$year, na.rm = TRUE)}"))
+  image_folder <- df$imagePath
+  image_file <- file.path(image_folder, paste0(basename(image_folder), ".jpg"))
+  image_src <- file.path("bird-data", sub("^Data/", "", image_file))
 
-  return(df)
+  audio_file <- if_else(
+    df$audioPath == "No Audio Data",
+    NA_character_,
+    df$audioPath
+  )
+  audio_src <- if_else(
+    is.na(audio_file),
+    NA_character_,
+    file.path("bird-data", sub("^Data/", "", audio_file))
+  )
+
+  credits_file <- if_else(
+    df$creditsPath == "No Audio Data",
+    NA_character_,
+    df$creditsPath
+  )
+  credits_src <- if_else(
+    is.na(credits_file),
+    NA_character_,
+    file.path("bird-data", sub("^Data/", "", credits_file))
+  )
+
+  df %>%
+    mutate(
+      markerPath = file.path(
+        "bird-data/Markers",
+        paste0(.data$order, "_", .data$rarityCategory, ".svg")
+      ),
+      image_file = image_file,
+      image_src = image_src,
+      audio_file = audio_file,
+      audio_src = audio_src,
+      credits_file = credits_file,
+      credits_src = credits_src
+    ) %>%
+    select(any_of(c(
+      "scientificName",
+      "commonName",
+      "order",
+      "family",
+      "genus",
+      "latitude",
+      "longitude",
+      "date",
+      "count",
+      "year",
+      "rarityCategory",
+      "description",
+      "image_file",
+      "image_src",
+      "audio_file",
+      "audio_src",
+      "credits_file",
+      "credits_src",
+      "markerPath"
+    )))
 }
 
-#' Get list of unique species from the data
-#' @param data The bird sighting dataframe
-#' @return vector of unique species names
-get_species_list <- function(data) {
-  species <- data %>%
-    distinct(scientificName, commonName) %>%
-    arrange(commonName) %>%
-    pull(commonName)
-
-  return(species)
-}
-
-#' Get list of unique bird orders from the data
-#' @param data The bird sighting dataframe
-#' @return vector of unique orders
-get_order_list <- function(data) {
-  orders <- data %>%
-    distinct(order) %>%
-    arrange(order) %>%
-    pull(order)
-
-  return(orders)
-}
-
-#' Filter bird data based on various criteria
-#' @param data The bird sighting dataframe
-#' @param species Filter by species (optional)
-#' @param order Filter by taxonomic order (optional)
-#' @param year_range Filter by year range (optional)
-#' @param radius_range Filter by distance range in km (optional)
-#' @param center_location Center point for radius filter c(lat, lng) (optional)
-#' @param rarity_filters List of rarity categories to show (optional)
-#' @return filtered dataframe
-filter_bird_data <- function(data,
-                              species = NULL,
-                              order = NULL,
-                              year_range = NULL,
-                              radius_range = NULL,
-                              center_location = NULL,
-                              rarity_filters = NULL) {
+filter_bird_data <- function(
+  data,
+  species = NULL,
+  order = NULL,
+  year_range = NULL,
+  radius_range = NULL,
+  center_location = NULL,
+  rarity_filters = NULL
+) {
   filtered <- data
 
-  # Filter by species if provided
   if (!is.null(species) && length(species) > 0) {
     filtered <- filtered %>%
-      filter(commonName %in% species)
+      filter(.data$commonName %in% species)
   }
 
-  # Filter by order if provided
   if (!is.null(order) && length(order) > 0) {
     filtered <- filtered %>%
       filter(.data$order %in% order)
   }
 
-  # Filter by rarity if provided
   if (!is.null(rarity_filters) && length(rarity_filters) > 0) {
     filtered <- filtered %>%
-      filter(rarityCategory %in% rarity_filters)
+      filter(.data$rarityCategory %in% rarity_filters)
   }
 
-  # Filter by year range if provided
   if (!is.null(year_range)) {
     filtered <- filtered %>%
-      filter(year >= year_range[1] & year <= year_range[2])
+      filter(.data$year >= year_range[1] & .data$year <= year_range[2])
   }
 
-  # Filter by distance if both radius and center location provided
   if (!is.null(radius_range) && !is.null(center_location)) {
     center_lat <- center_location[1]
     center_lon <- center_location[2]
@@ -157,36 +175,33 @@ filter_bird_data <- function(data,
     filtered <- filtered %>%
       mutate(distance = distances) %>%
       filter(
-        distance >= radius_range[1],
-        distance <= radius_range[2]
+        .data$distance >= radius_range[1],
+        .data$distance <= radius_range[2]
       )
   }
 
-  # Deduplicate bird species within proximity to prevent multiple instances in spirals
-  # At zoom levels 10-14: Birds cluster and form spirals - we want only unique species
-  # At zoom level 15+: Clustering is disabled, all birds show at actual locations
+  # Deduplicate nearby observations to avoid spiral duplicates in clusters.
+  # Zoom 10-14 keeps one per species; zoom 15+ shows all observations.
 
   if (nrow(filtered) > 0) {
     # Sort to prioritize best observations: most recent date, highest count
     filtered <- filtered %>%
-      arrange(scientificName, desc(date), desc(count))
+      arrange(.data$scientificName, desc(.data$date), desc(.data$count))
 
-    # Track which rows to keep
     keep_rows <- rep(TRUE, nrow(filtered))
 
-    # For each bird, check if there are duplicate species nearby
     for (i in seq_len(nrow(filtered))) {
-      if (!keep_rows[i]) next  # Already marked as duplicate
+      if (!keep_rows[i]) {
+        next
+      }
 
-      # Find later observations of the same species
       same_species_later <- which(
         filtered$scientificName == filtered$scientificName[i] &
-        keep_rows &
-        seq_len(nrow(filtered)) > i
+          keep_rows &
+          seq_len(nrow(filtered)) > i
       )
 
       if (length(same_species_later) > 0) {
-        # Calculate distances to other same-species observations
         distances <- haversine_km(
           lat = filtered$latitude[same_species_later],
           lon = filtered$longitude[same_species_later],
@@ -202,7 +217,6 @@ filter_bird_data <- function(data,
       }
     }
 
-    # Keep only non-duplicate observations
     filtered <- filtered[keep_rows, ]
   }
 
@@ -210,5 +224,5 @@ filter_bird_data <- function(data,
   filtered <- filtered %>%
     mutate(marker_id = row_number())
 
-  return(filtered)
+  filtered
 }

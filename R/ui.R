@@ -1,21 +1,20 @@
-################################################################################
-# UI components for the dashboard                                              #
-################################################################################
 library(shiny)
 library(leaflet)
-library(glue)
 library(htmltools)
 
-# Headers----------------------------------------------------------------------
+# Custom JavaScript and CSS styling adapted from the work of 
+# Johnson Zhou's Parkit App.
+# Original implementation reference:
+#  https://github.com/johnsonjzhou/geom90007-a3
+# Styles were modified and extended to fit the current 
+# project's theme and UI structure.
 
 headers <- tags$head(
-  # favicon
   tags$link(
     rel = "icon",
     type = "image/x-icon",
-    href = "assets/favicon.svg"
+    href = "assets/naarmwings-logo.svg"
   ),
-  # web fonts
   tags$link(
     rel = "stylesheet",
     type = "text/css",
@@ -26,17 +25,24 @@ headers <- tags$head(
     type = "text/css",
     href = "https://fonts.googleapis.com/icon?family=Material+Icons"
   ),
-  # css overrides
   tags$link(
     rel = "stylesheet",
     type = "text/css",
     href = "assets/shiny_app.css"
   ),
+
   # mermaid.js for taxonomy diagrams
+  # Core diagram rendering powered by Mermaid.js:
+  # Knut Sveidqvist et al. (2014–2024)
+  # Mermaid – Generation of diagrams and flowcharts from text in  
+  # a similar manner as markdown.
+  # https://mermaid.js.org/
   tags$script(
     src = "https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"
   ),
-  tags$script(HTML("
+  # nolint start: line_length_linter
+  tags$script(HTML(
+    "
     mermaid.initialize({
       startOnLoad: false,
       theme: 'base',
@@ -56,8 +62,10 @@ headers <- tags$head(
         padding: 10
       }
     });
-  ")),
-  tags$script(HTML("
+  "
+  )),
+  tags$script(HTML(
+    "
     (function() {
       var pendingDefinitions = {};
 
@@ -75,6 +83,8 @@ headers <- tags$head(
             pendingDefinitions[targetId] = definitionOverride;
           }
 
+          // Retry pattern to wait for DOM element and library loading
+          // https://stackoverflow.com/questions/5525071/how-to-wait-until-an-element-exists
           var attempts = 20;
 
           function tryRender() {
@@ -144,10 +154,12 @@ headers <- tags$head(
                 result.bindFunctions(el);
               }
             }).catch(function(err) {
-              console.error(\"Mermaid rendering failed for\", targetId, err);
+              // Mermaid rendering failed
             });
           }
 
+          // requestAnimationFrame polyfill with 16ms fallback (60fps)
+          // https://stackoverflow.com/questions/5605588/how-to-use-requestanimationframe
           var raf = window.requestAnimationFrame || function(cb) { return window.setTimeout(cb, 16); };
           raf(tryRender);
         }
@@ -182,14 +194,16 @@ headers <- tags$head(
         document.addEventListener(\"shiny:connected\", setupMermaidHandlers, { once: true });
       }
     })();
-  ")),
-  # javascript
+  "
+  )),
+  # nolint end
   tags$script(
     src = "assets/shiny_app.js"
-  )
-  ,
+  ),
   # helper to update Tableau viz year filter from Shiny
-  tags$script(HTML('
+  # nolint start: line_length_linter
+  tags$script(HTML(
+    '
     window.updateTableauYearRange = function(id, minYear, maxYear) {
       let attempts = 25;
       const minDate = new Date(minYear, 0, 1);
@@ -215,7 +229,6 @@ headers <- tags$head(
           await applyTo(viz.workbook.activeSheet);
         } catch (e) {
           if (attempts-- > 0) return void setTimeout(tick, 160);
-          console.error("updateTableauYearRange error", e);
         }
       };
       tick();
@@ -223,44 +236,39 @@ headers <- tags$head(
 
     window.updateTableauScientificName = function(id, scientificName) {
       let attempts = 25;
-      console.log("[updateTableauScientificName] Called for ID:", id, "ScientificName:", scientificName);
       const tick = async () => {
         try {
           const viz = document.getElementById(id);
           if (!viz || !viz.workbook) {
-            console.warn("[updateTableauScientificName] Viz not found or workbook not loaded for ID:", id);
             if (attempts-- > 0) return void setTimeout(tick, 160);
             return;
           }
           const applyTo = async (sheet) => {
             if (!sheet) return;
             if (typeof sheet.applyFilterAsync === "function") {
-              console.log("[updateTableauScientificName] Applying filter to activeSheet", id, scientificName);
               await sheet.applyFilterAsync("Scientific Name", [scientificName], "replace");
             }
             if (sheet.worksheets && sheet.worksheets.length) {
               for (const ws of sheet.worksheets) {
                 try {
-                  console.log("[updateTableauScientificName] Applying filter to worksheet", ws.name || ws, scientificName);
                   await ws.applyFilterAsync("Scientific Name", [scientificName], "replace");
                 } catch (e) {
-                  console.warn("Could not apply filter to worksheet", ws, e);
+                  // Could not apply filter to worksheet
                 }
               }
             }
           };
           await applyTo(viz.workbook.activeSheet);
         } catch (e) {
-          console.error("[updateTableauScientificName] Error during filtering:", e);
           if (attempts-- > 0) return void setTimeout(tick, 160);
         }
       };
       tick();
     };
-  '))
+  '
+  ))
+  # nolint end
 )
-
-# Filter Panel-----------------------------------------------------------------
 
 filter_panel <- tabPanel(
   title = "Filters",
@@ -346,9 +354,9 @@ filter_panel <- tabPanel(
     ),
     sliderInput(
       inputId = "filter_year_range",
-      min = 1985,
+      min = 1998,
       max = 2019,
-      value = c(1985, 2019),
+      value = c(1998, 2019),
       step = 1,
       sep = "",
       label = NULL
@@ -374,13 +382,11 @@ filter_panel <- tabPanel(
   tags$div(class = "spacer h32")
 )
 
-# Dimmer Panel-----------------------------------------------------------------
+# Dimmer panel
 
 dimmer_panel <- tabPanel(
   title = "Dimmer"
 )
-
-# Map Panel---------------------------------------------------------------------
 
 map_panel <- tabPanel(
   title = "Map",
@@ -391,14 +397,12 @@ map_panel <- tabPanel(
   )
 )
 
-# Search Panel-----------------------------------------------------------------
-
 search_panel <- tabPanel(
   title = "Search",
   fluidRow(
     class = "logo",
     tags$img(
-      src = "assets/logo.svg"
+      src = "assets/naarmwings-logo.svg"
     )
   ),
   fluidRow(
@@ -409,7 +413,7 @@ search_panel <- tabPanel(
         inputId = "search-input",
         label = NULL,
         value = "Melbourne",
-        placeholder = "Search Destination"
+        placeholder = "Search Location"
       ),
       tags$div(
         id = "button-gps",
@@ -427,8 +431,6 @@ search_results_panel <- tabPanel(
   title = "SearchResults"
 )
 
-# Intro panel------------------------------------------------------------------
-
 intro_panel <- tabPanel(
   title = "Intro",
   class = "page-1",
@@ -439,21 +441,27 @@ intro_panel <- tabPanel(
       class = "page",
       tags$img(src = "assets/slide1.svg"),
       tags$p(
-        "Explore bird observations across Melbourne (Naarm) from 1985 to 2019."
+        "Explore bird observations across Melbourne (Naarm) from 1998 to 2019."
       )
     ),
     tags$div(
       class = "page",
       tags$img(src = "assets/slide2.svg"),
       tags$p(
-        "Find species near your location, filter by time period, rarity, and more."
+        paste(
+          "Find species near your location, filter by time period,",
+          "rarity, and more."
+        )
       )
     ),
     tags$div(
       class = "page",
       tags$img(src = "assets/slide3.svg"),
       tags$p(
-        "Discover the rich avian biodiversity of Melbourne with interactive maps and sounds."
+        paste(
+          "Discover the rich avian biodiversity of Melbourne",
+          "with interactive maps and sounds."
+        )
       )
     )
   ),
@@ -477,8 +485,6 @@ intro_panel <- tabPanel(
   )
 )
 
-# Loading panel----------------------------------------------------------------
-
 loading_panel <- tabPanel(
   title = "Loading",
   class = "container",
@@ -486,8 +492,6 @@ loading_panel <- tabPanel(
     class = "pulse"
   )
 )
-
-# UI element-------------------------------------------------------------------
 
 ui <- tagList(
   headers,

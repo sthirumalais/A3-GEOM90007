@@ -1,3 +1,4 @@
+# nolint start
 # GEOM90007 Information Visualisation
 # tableau-in-shiny R Library
 # version 1.2, 2024-09-04
@@ -72,7 +73,6 @@ setUpTableauInShiny <- function() {
             value: param.currentValue.value
           });
         });
-        console.log("added events for", id)
       };
     </script>')
   )
@@ -92,3 +92,4 @@ tableauPublicViz <- function(id, url, height="500px", style=NA, ...) {
 }
 
 
+# nolint end
