@@ -4,7 +4,7 @@
   <img src="Data/Logo/NaarmWings Logo.svg" alt="NaarmWings Logo" width="220"/>
 </p>
 
-### 🌐 [Access the Live Shiny App](https://naarm-wings.shinyapps.io/a3-geom90007/)
+### [Access the Live Shiny App](https://naarm-wings.shinyapps.io/a3-geom90007/)
 
 ---
 
@@ -87,9 +87,9 @@ We gratefully acknowledge the provision of this library code for educational pur
 
 ---
 
-### 🧭 How to Run the App
+### How to Run the App
 
-> ⚠️ **Note:** This app uses CSS styles that are not supported by the built-in RStudio viewer.  
+> **Note:** This app uses CSS styles that are not supported by the built-in RStudio viewer.  
 > For the best experience, open the app in an **external browser**.
 
 ### Install dependencies
@@ -110,7 +110,7 @@ shiny::runApp(launch.browser = FALSE)
 
 ---
 
-### 🏗️ Building
+### Building
 
 Directory Tree
 
